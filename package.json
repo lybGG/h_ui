@@ -31,7 +31,8 @@
     "deepmerge": "^1.4.3",
     "encoding": "0.1.12",
     "iconv-lite": "0.4.24",
-    "js-calendar": "^1.2.3"
+    "js-calendar": "^1.2.3",
+    "phantomjs-prebuilt": "^2.1.16"
   },
   "peerDependencies": {
     "vue": "^2.1.8",

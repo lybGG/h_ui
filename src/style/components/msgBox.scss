@@ -45,7 +45,8 @@ $confirm-prefix-cls: "#{$css-prefix}modal-confirm";
 
   &-header {
     cursor:pointer;
-    @include content-header;
+
+    @include content-header; 
   }
 
   &-close {
