@@ -166,7 +166,7 @@ export default {
       if (this.multiple) {
         this.$parent.$parent.selectBlockMultiple(item.value,item)
       } else {
-        this.$parent.$parent.selectBlockSingle(item.value,false)
+        this.$parent.$parent.selectBlockSingle(item.value,false,'click')
       }
     },
     checkChange(val, item) {
@@ -176,6 +176,7 @@ export default {
       this.isFocus = false
     },
     queryChange(val) {
+      console.log(val)
       const parsedQuery = val.replace(
         /(\^|\(|\)|\[|\]|\$|\*|\+|\.|\?|\\|\{|\}|\|)/g,
         '\\$1'
@@ -186,20 +187,23 @@ export default {
           this.cloneData.forEach(col => {
             let targetLabel = col.label
             // 如果存在多列，则匹配目标为多列所有列
-            if (this.showCol.length&&!this.$parent.$parent.newSearchModel) {
+            if (this.showCol.length&&!this.$parent.$parent.newSearchModel&&!this.$parent.$parent.isSingleSelect) {
               targetLabel = targetLabel + ' ' + this.getTargetLabel(col).join(' ')
             }          
             let targetValue =col.value
             let selected=col.selected
-            let targetoption=this.$parent.$parent.filterBy=="label"||this.$parent.$parent.filterBy==undefined?targetLabel:targetValue;
-            let hidden = !new RegExp(parsedQuery, 'i').test(targetoption)
+           // let targetoption=this.$parent.$parent.filterBy=="label"||this.$parent.$parent.filterBy==undefined?targetLabel:targetValue;
+            let hidden = !new RegExp(parsedQuery, 'i').test(col.label)
+            if(hidden){
+               hidden=!new RegExp(parsedQuery, 'i').test(col.value)
+            }
             this.$set(col, 'hidden', hidden)
             
             if (status && !hidden) {
               status = false
             }
-            if(this.$parent.$parent.accuFilter){          
-              if ((parsedQuery===targetoption)&&!selected) {
+            if(this.$parent.$parent.accuFilter){         
+              if ((parsedQuery===targetLabel)&&!selected) {
                 if(this.$parent.$parent.isSingleSelect){
                   isEffective = true
                   this.$parent.$parent.selectBlockSingle(targetValue,true)
@@ -397,7 +401,11 @@ export default {
             this.$set(item, 'focus', false)
           })
           this.$parent.$parent.updateOptions(true)
+          if(this.lastScollTop > val.length*this.itemHeight){
+            this.lastScollTop = val.length*this.itemHeight-210;
+          }
           this.updateVisibleData()
+
         // })
       }
     },

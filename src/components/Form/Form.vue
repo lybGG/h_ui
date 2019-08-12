@@ -228,16 +228,18 @@ export default {
         if(this.fields[i].$children[0].focus) {
           this.fields[i].$children[0].focus()
         }
-        if(this.fields[i].$children[0].value && this.fields[i].$children[0].select) {
-          this.fields[i].$children[0].select()
+        if(window.isO45) {
+          //【TS:201907290055-资管业委会（资管）_孔磊-【需求类型】需求【需求描述】在form中调用 firstNodeFocused 时选中第一个输入框，同时全选输入框中内容】
+          if(this.fields[i].$children[0].value && this.fields[i].$children[0].select) {
+            this.fields[i].$children[0].select()
+          }
         }
-        if(window.isO45) return false
-//        if (this.fields[i].$children[0].opened)
-//          this.fields[i].$children[0].opened = false
-//        this.$nextTick(() => {
-//          if (this.fields[i].$children[0].visible)
-//            this.fields[i].$children[0].visible = false
-//        })
+        if (this.fields[i].$children[0].opened)
+          this.fields[i].$children[0].opened = false
+        this.$nextTick(() => {
+          if (this.fields[i].$children[0].visible)
+            this.fields[i].$children[0].visible = false
+        })
       })
     }
   },

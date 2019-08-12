@@ -313,6 +313,10 @@ $table-select-item-prefix-cls: "#{$table-prefix-cls}-filter-select-item";
     top: $table-fixed-fixedright-top;
     left: auto;
     right: $table-fixed-fixedright-right;
+    .#{$table-prefix-cls}-cell{
+      padding-left:$table-fixed-cell-padding-left;
+      padding-right: $table-fixed-cell-padding-left;
+    }
   }
   &-fixed-right-patch{
     position: absolute;

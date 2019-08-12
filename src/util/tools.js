@@ -172,7 +172,7 @@ export function scrollTop(el, from = 0, to, duration = 500) {
       window.webkitRequestAnimationFrame ||
       window.mozRequestAnimationFrame ||
       window.msRequestAnimationFrame ||
-      function (callback) {
+      function(callback) {
         return window.setTimeout(callback, 1000 / 60)
       }
   }
@@ -210,7 +210,7 @@ const MOZ_HACK_REGEXP = /^moz([A-Z])/
 
 function camelCase(name) {
   return name
-    .replace(SPECIAL_CHARS_REGEXP, function (_, separator, letter, offset) {
+    .replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
       return offset ? letter.toUpperCase() : letter
     })
     .replace(MOZ_HACK_REGEXP, 'Moz$1')
@@ -500,7 +500,7 @@ export function removeClass(el, cls) {
 export function findInx(arr, fun) {
   if (!Array.prototype.findIndex) {
     Object.defineProperty(Array.prototype, 'findIndex', {
-      value: function (predicate) {
+      value: function(predicate) {
         // 1. Let O be ? ToObject(this value).
         if (this == null) {
           throw new TypeError('"this" is null or not defined')
@@ -550,43 +550,43 @@ export function fill(arr, value, start, end) {
   
         // Steps 1-2.
         if (this == null) {
-          throw new TypeError('this is null or not defined');
+          throw new TypeError('this is null or not defined')
         }
   
-        var O = Object(this);
+        var O = Object(this)
   
         // Steps 3-5.
-        var len = O.length >>> 0;
+        var len = O.length >>> 0
   
         // Steps 6-7.
-        var start = arguments[1];
-        var relativeStart = start >> 0;
+        var start = arguments[1]
+        var relativeStart = start >> 0
   
         // Step 8.
         var k = relativeStart < 0 ?
           Math.max(len + relativeStart, 0) :
-          Math.min(relativeStart, len);
+          Math.min(relativeStart, len)
   
         // Steps 9-10.
-        var end = arguments[2];
+        var end = arguments[2]
         var relativeEnd = end === undefined ?
-          len : end >> 0;
+          len : end >> 0
   
         // Step 11.
         var final = relativeEnd < 0 ?
           Math.max(len + relativeEnd, 0) :
-          Math.min(relativeEnd, len);
+          Math.min(relativeEnd, len)
   
         // Step 12.
         while (k < final) {
-          O[k] = value;
-          k++;
+          O[k] = value
+          k++
         }
   
         // Step 13.
-        return O;
+        return O
       }
-    });
+    })
   }
   return arr.fill(value, start, end)
 }
@@ -867,17 +867,17 @@ export function toFixedForString(str, num) {
 // 获取当前节点
 function findCurNode(obj) {
   while (obj.parentElement.parentElement.className.indexOf('h-form-item-content') == -1) {
-    obj = obj.parentNode;
+    obj = obj.parentNode
   }
   if (obj.className.indexOf('h-radio') != -1 || obj.className.indexOf('h-checkbox') != -1) {
-    return [obj, true];
+    return [obj, true]
   } else {
-    return [obj.parentNode, false];
+    return [obj.parentNode, false]
   }
 }
 function isButtonOr(obj) {
   if (obj.nodeName.toLowerCase() === 'button') {
-    return true;
+    return true
   } else {
     return false
   }
@@ -886,37 +886,37 @@ function isButtonOr(obj) {
 function getNextElement(ele, field) {
   var isButton = isButtonOr(field)
   if (isButton) {
-    return field.nextElementSibling ? field.nextElementSibling : null;
+    return field.nextElementSibling ? field.nextElementSibling : null
   }
-  var curArr = findCurNode(field);
-  var curNode = curArr[0];
-  var isRadioOrCheck = curArr[1];
-  var nextNode = null;
-  curNode.__vue__.blur();
-  var form = ele;
-  var nodes = form.children;
-  var index = 0;
+  var curArr = findCurNode(field)
+  var curNode = curArr[0]
+  var isRadioOrCheck = curArr[1]
+  var nextNode = null
+  curNode.__vue__.blur()
+  var form = ele
+  var nodes = form.children
+  var index = 0
   if (isRadioOrCheck && curNode.nextElementSibling) {
-    nextNode = curNode.nextElementSibling;
+    nextNode = curNode.nextElementSibling
   } else {
     if (isRadioOrCheck && !curNode.nextElementSibling) {
-      curNode = curNode.parentNode;
+      curNode = curNode.parentNode
     }
     for (var i = 0; i < nodes.length; i++) {
       if (nodes[i].children && curNode == nodes[i].children[1].children[0]) {
-        index = i + 1;
+        index = i + 1
         break;
       }
     }
-    isRadioOrCheck = nodes[index].children[1].children[0].className.indexOf('h-radio-group') != -1 || nodes[index].children[1].children[0].className.indexOf('h-checkbox-group') != -1;
-    if (index == 0) return;
+    isRadioOrCheck = nodes[index].children[1].children[0].className.indexOf('h-radio-group') != -1 || nodes[index].children[1].children[0].className.indexOf('h-checkbox-group') != -1
+    if (index == 0) return
     if (isRadioOrCheck) {
-      nextNode = nodes[index].children[1].children[0].children[0];
+      nextNode = nodes[index].children[1].children[0].children[0]
     } else {
-      nextNode = nodes[index].children[1].children[0];
+      nextNode = nodes[index].children[1].children[0]
     }
   }
-  return nextNode;
+  return nextNode
 }
 //获取上一个对象
 function getPrevioueElement(ele, field) {
@@ -924,42 +924,42 @@ function getPrevioueElement(ele, field) {
   var curNode = null
   var isRadioOrCheck = false
   if (isButton) {
-    curNode = field;
+    curNode = field
   } else {
-    var curArr = findCurNode(field);
-    curNode = curArr[0];
-    isRadioOrCheck = curArr[1];
+    var curArr = findCurNode(field)
+    curNode = curArr[0]
+    isRadioOrCheck = curArr[1]
   }
-  var form = ele;
-  var nodes = form.children;
-  var index = 0;
-  var previousNode = null;
-  curNode.__vue__.blur();
+  var form = ele
+  var nodes = form.children
+  var index = 0
+  var previousNode = null
+  curNode.__vue__.blur()
   if ((isButton && curNode.previousElementSibling) || isRadioOrCheck && curNode.previousElementSibling) {
-    return curNode.previousElementSibling;
+    return curNode.previousElementSibling
   } else {
     if (isRadioOrCheck && !curNode.previousElementSibling) {
-      curNode = curNode.parentNode;
+      curNode = curNode.parentNode
     }
     for (var i = nodes.length - 1; i > -1; i--) {
       if (nodes[i].children && curNode == nodes[i].children[1].children[0]) {
-        index = i - 1;
+        index = i - 1
         break;
       }
     }
-    if (index == -1) index = 0;
-    isRadioOrCheck = nodes[index].children[1].children[0].className.indexOf('h-radio-group') != -1 || nodes[index].children[1].children[0].className.indexOf('h-checkbox-group') != -1;
+    if (index == -1) index = 0
+    isRadioOrCheck = nodes[index].children[1].children[0].className.indexOf('h-radio-group') != -1 || nodes[index].children[1].children[0].className.indexOf('h-checkbox-group') != -1
     if (isRadioOrCheck) {
-      let curObj = nodes[index].children[1].children[0];
-      previousNode = curObj.children[curObj.children.length - 1];
+      let curObj = nodes[index].children[1].children[0]
+      previousNode = curObj.children[curObj.children.length - 1]
     } else {
-      previousNode = nodes[index].children[1].children[0];
+      previousNode = nodes[index].children[1].children[0]
     }
-    return previousNode;
+    return previousNode
   }
-  var form = ele;
-  var nodes = form.children;
-  var index = form.children - 1;
+  var form = ele
+  var nodes = form.children
+  var index = form.children - 1
 }
 
 /* 表单键盘Enter事件
@@ -971,27 +971,27 @@ evt
 */
 export function enterHandler(ele, evt) {
   ele = ele.$el
-  var isie = (document.all) ? true : false;
-  var key;
-  var srcobj;
+  var isie = (document.all) ? true : false
+  var key
+  var srcobj
   if (isie) {
-    key = event.keyCode;
-    srcobj = event.srcElement;
+    key = event.keyCode
+    srcobj = event.srcElement
   } else {
-    key = evt.which;
-    srcobj = evt.target;
+    key = evt.which
+    srcobj = evt.target
   }
   if (srcobj.type == 'submit' || srcobj.type == 'reset' || srcobj.type == 'textarea' || srcobj.type == '') return
   //enter键盘 下键盘
   if (evt.keyCode == 13) {
     if (isie) {
-      evt.keyCode = 9;
+      evt.keyCode = 9
     } else {
-      var el = getNextElement(ele, evt.target);
+      var el = getNextElement(ele, evt.target)
       if (!el) {
-        return false;
+        return false
       } else {
-        el.__vue__.focus();
+        el.__vue__.focus()
       }
     }
   }
@@ -1000,15 +1000,24 @@ export function enterHandler(ele, evt) {
 
 function getCurNode(obj) {
   while (obj.className.indexOf('curItemClass') == -1) {
-    obj = obj.parentNode;
+    obj = obj.parentNode
   }
   return obj
 }
 function getElement(ele, field, status) {
-  var nodes = ele.querySelectorAll('.curItemClass');
-  var index = 0;
-  var curNode = getCurNode(field);
-  curNode.__vue__.blur();
+  var nodes = ele.querySelectorAll('.curItemClass')
+  var index = 0
+  var curNode = getCurNode(field)
+  if(curNode.querySelector('input')){
+    if(curNode.querySelector('input').getAttribute('search')==='multiSelect'){
+      let isshow=curNode.querySelector('.h-select-dropdown').style.display
+      if(isshow!='none'){
+        return
+      }
+    }
+  }
+  
+  curNode.__vue__.blur()
   // nodes = Array.prototype.slice.call(nodes).sort((a,b)=>{
   //   if(Number(a.dataset.index)>Number(b.dataset.index)){
   //     return 0
@@ -1018,7 +1027,7 @@ function getElement(ele, field, status) {
   // })
   for (var i = 0; i < nodes.length; i++) {
     if (nodes[i] && curNode == nodes[i]) {
-      index = i;
+      index = i
       break;
     }
   }
@@ -1029,42 +1038,42 @@ function getElement(ele, field, status) {
     index = index - 1
     index = index < 0 ? 0 : index
   }
-  return nodes[index];
+  return nodes[index]
 }
 export function enterHandler1(ele, evt) {
   ele = ele.$el
-  var isie = (document.all) ? true : false;
-  var key;
-  var srcobj;
+  var isie = (document.all) ? true : false
+  var key
+  var srcobj
   if (isie) {
-    key = event.keyCode;
-    srcobj = event.srcElement;
+    key = event.keyCode
+    srcobj = event.srcElement
   } else {
-    key = evt.which;
-    srcobj = evt.target;
+    key = evt.which
+    srcobj = evt.target
   }
   //enter键盘 下键盘
   if (evt.keyCode == 13 || evt.keyCode == 40 || evt.keyCode==9) {
-    evt.preventDefault();
+    evt.preventDefault()
     if (isie) {
-      evt.keyCode = 9;
+      evt.keyCode = 9
     } else {
-      var el = getElement(ele, evt.target, true);
+      var el = getElement(ele, evt.target, true)
       if (!el) {
-        return false;
+        return false
       } else {
-        el.__vue__.focus();
+        el.__vue__.focus()
       }
     }
   }
   // 上键盘
   if (evt.keyCode == 38) {
-    evt.preventDefault();
-    var el = getElement(ele, evt.target, false);
+    evt.preventDefault()
+    var el = getElement(ele, evt.target, false)
     if (!el) {
-      return false;
+      return false
     } else {
-      el.__vue__.focus();
+      el.__vue__.focus()
     }
   }
 }
@@ -1142,49 +1151,49 @@ export function debounceWithImmediate(fun, delay = 100, immediate = false) {
   }
 }
 
-Number.prototype.toFixedSelf = function (n) {
+Number.prototype.toFixedSelf = function(n) {
   if (n > 20 || n < 0) {
-      throw new RangeError('toFixed() digits argument must be between 0 and 20');
+    throw new RangeError('toFixed() digits argument must be between 0 and 20')
   }
-  const number = this;
+  const number = this
   if (isNaN(number) || number >= Math.pow(10, 21)) {
-      return number.toString();
+    return number.toString()
   }
   if (typeof (n) == 'undefined' || n == 0) {
-      return (Math.round(number)).toString();
+    return (Math.round(number)).toString()
   }
-  let result = number.toString();
-  const arr = result.split('.');
+  let result = number.toString()
+  const arr = result.split('.')
   // 整数的情况
   if (arr.length < 2) {
-      result += '.';
-      for (let i = 0; i < n; i += 1) {
-          result += '0';
-      }
-      return result;
+    result += '.'
+    for (let i = 0; i < n; i += 1) {
+      result += '0'
+    }
+    return result
   }
-  const integer = arr[0];
-  const decimal = arr[1];
+  const integer = arr[0]
+  const decimal = arr[1]
   if (decimal.length == n) {
-      return result;
+    return result
   }
   if (decimal.length < n) {
-      for (let i = 0; i < n - decimal.length; i += 1) {
-          result += '0';
-      }
-      return result;
+    for (let i = 0; i < n - decimal.length; i += 1) {
+      result += '0'
+    }
+    return result
   }
-  result = integer + '.' + decimal.substr(0, n);
-  const last = decimal.substr(n, 1);
+  result = integer + '.' + decimal.substr(0, n)
+  const last = decimal.substr(n, 1)
 
   // 四舍五入，转换为整数再处理，避免浮点数精度的损失
   if (parseInt(last, 10) >= 5) {
-      const x = Math.pow(10, n);
-      result = (Math.round((parseFloat(result) * x)) + 1) / x;
-      result = result.toFixedSelf(n);
+    const x = Math.pow(10, n)
+    result = (Math.round((parseFloat(result) * x)) + 1) / x
+    result = result.toFixedSelf(n)
   }
-  return result;
-};
+  return result
+}
 /**
  * @description 切割整数位
  * @date 2019-07-18
@@ -1192,236 +1201,236 @@ Number.prototype.toFixedSelf = function (n) {
  * @param {Number} integerNum 整数位数
  */
 export function cutNum(value,integerNum){
-  var arrNum=value.split(".");
+  var arrNum=value.split('.')
   if(arrNum.length>0){
-    var integerNumber=arrNum[0].substr(0,integerNum);
+    var integerNumber=arrNum[0].substr(0,integerNum)
     if(arrNum.length>1){
-      value=integerNumber+"."+arrNum[1]
+      value=integerNumber+'.'+arrNum[1]
     }else{
       value=integerNumber
     }
   }
-  return value;
+  return value
 }
-export function numtochinese (Num,suffixNumber) {
+export function numtochinese(Num,suffixNumber) {
   for (var i = Num.length - 1; i >= 0; i--) {
-    Num = Num.replace(",", "")// 替换tomoney()中的“,”
-    Num = Num.replace(" ", "")// 替换tomoney()中的空格
+    Num = Num.replace(',', '')// 替换tomoney()中的“,”
+    Num = Num.replace(' ', '')// 替换tomoney()中的空格
   }
-  Num = Num.replace("￥", "")// 替换掉可能出现的￥字符
+  Num = Num.replace('￥', '')// 替换掉可能出现的￥字符
   if (isNaN(Num)) {
     // 验证输入的字符是否为数字
     // alert("请检查小写金额是否正确");
-    return;
+    return
   }
   // ---字符处理完毕，开始转换，转换采用前后两部分分别转换---//
-  var part = String(Num).split(".");
-  var newchar = "";
+  var part = String(Num).split('.')
+  var newchar = ''
   // 小数点前进行转化
   for (i = part[0].length - 1; i >= 0; i--) {
     if (part[0].length > 17) {
     //   alert("");
-      return "位数过大，无法计算";
+      return '位数过大，无法计算'
     }// 若数量超过拾亿单位，提示
-    var tmpnewchar = ""
-    var perchar = part[0].charAt(i);
+    var tmpnewchar = ''
+    var perchar = part[0].charAt(i)
     switch (perchar) {
-    case "0":
-      tmpnewchar = "零" + tmpnewchar;
+      case '0':
+        tmpnewchar = '零' + tmpnewchar
       break;
-    case "1":
-      tmpnewchar = "壹" + tmpnewchar;
+      case '1':
+        tmpnewchar = '壹' + tmpnewchar
       break;
-    case "2":
-      tmpnewchar = "贰" + tmpnewchar;
+      case '2':
+        tmpnewchar = '贰' + tmpnewchar
       break;
-    case "3":
-      tmpnewchar = "叁" + tmpnewchar;
+      case '3':
+        tmpnewchar = '叁' + tmpnewchar
       break;
-    case "4":
-      tmpnewchar = "肆" + tmpnewchar;
+      case '4':
+        tmpnewchar = '肆' + tmpnewchar
       break;
-    case "5":
-      tmpnewchar = "伍" + tmpnewchar;
+      case '5':
+        tmpnewchar = '伍' + tmpnewchar
       break;
-    case "6":
-      tmpnewchar = "陆" + tmpnewchar;
+      case '6':
+        tmpnewchar = '陆' + tmpnewchar
       break;
-    case "7":
-      tmpnewchar = "柒" + tmpnewchar;
+      case '7':
+        tmpnewchar = '柒' + tmpnewchar
       break;
-    case "8":
-      tmpnewchar = "捌" + tmpnewchar;
+      case '8':
+        tmpnewchar = '捌' + tmpnewchar
       break;
-    case "9":
-      tmpnewchar = "玖" + tmpnewchar;
+      case '9':
+        tmpnewchar = '玖' + tmpnewchar
       break;
     }
     switch (part[0].length - i - 1) {
-    case 0:
-      tmpnewchar = tmpnewchar + "元";
-      break;
-    case 1:
-      if (perchar != 0)
-        tmpnewchar = tmpnewchar + "拾";
-      break;
-    case 2:
-      if (perchar != 0)
-        tmpnewchar = tmpnewchar + "佰";
-      break;
-    case 3:
-      if (perchar != 0)
-        tmpnewchar = tmpnewchar + "仟";
-      break;
-    case 4:
-      tmpnewchar = tmpnewchar + "万";
-      break;
-    case 5:
-      if (perchar != 0)
-        tmpnewchar = tmpnewchar + "拾";
-      break;
-    case 6:
-      if (perchar != 0)
-        tmpnewchar = tmpnewchar + "佰";
-      break;
-    case 7:
-      if (perchar != 0)
-        tmpnewchar = tmpnewchar + "仟";
-      break;
-    case 8:
-      tmpnewchar = tmpnewchar + "亿";
-      break;
-    case 9:
-      if (perchar != 0)
-      tmpnewchar = tmpnewchar + "拾";
-      break;
-    case 10:
-      if (perchar != 0)
-      tmpnewchar = tmpnewchar + "百";
-      break;
-    case 11:
-      if (perchar != 0)
-      tmpnewchar = tmpnewchar + "仟";
-      break;
-    case 12:
-      tmpnewchar = tmpnewchar + "兆";
-      break;
-    case 13:
-      if (perchar != 0)
-      tmpnewchar = tmpnewchar + "拾";
-      break;
-    case 14:
-      if (perchar != 0)
-      tmpnewchar = tmpnewchar + "百";
-      break;
-    case 15:
-      if (perchar != 0)
-      tmpnewchar = tmpnewchar + "仟";
-      break;
-    case 16:
-      if (perchar != 0)
-      tmpnewchar = tmpnewchar + "京";
-      break;
-    case 17:
-      tmpnewchar = tmpnewchar + "拾";
-      break;
+      case 0:
+        tmpnewchar = tmpnewchar + '元'
+        break
+      case 1:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '拾'
+        break
+      case 2:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '佰'
+        break
+      case 3:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '仟'
+        break
+      case 4:
+        tmpnewchar = tmpnewchar + '万'
+        break
+      case 5:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '拾'
+        break
+      case 6:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '佰'
+        break
+      case 7:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '仟'
+        break
+      case 8:
+        tmpnewchar = tmpnewchar + '亿'
+        break
+      case 9:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '拾'
+        break
+      case 10:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '百'
+        break
+      case 11:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '仟'
+        break
+      case 12:
+        tmpnewchar = tmpnewchar + '兆'
+        break
+      case 13:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '拾'
+        break
+      case 14:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '百'
+        break
+      case 15:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '仟'
+        break
+      case 16:
+        if (perchar != 0)
+          tmpnewchar = tmpnewchar + '京'
+        break
+      case 17:
+        tmpnewchar = tmpnewchar + '拾'
+        break
     }
-    newchar = tmpnewchar + newchar;
+    newchar = tmpnewchar + newchar
   }
   // 小数点之后进行转化
-  if (Num.indexOf(".") != -1) {
+  if (Num.indexOf('.') != -1) {
     if (part[1].length > 2) {
       //alert("小数点之后只能保留两位,系统将自动截段");
-      var tempNum = parseFloat(Num);
-      Num = tempNum.toFixedSelf(suffixNumber);
-      part = String(Num).split(".");
+      var tempNum = parseFloat(Num)
+      Num = tempNum.toFixedSelf(suffixNumber)
+      part = String(Num).split('.')
     }
     for (i = 0; i < part[1].length; i++) {
-      tmpnewchar = ""
+      tmpnewchar = ''
       perchar = part[1].charAt(i)
       switch (perchar) {
-      case "0":
-        tmpnewchar = "零" + tmpnewchar;
-        break;
-      case "1":
-        tmpnewchar = "壹" + tmpnewchar;
-        break;
-      case "2":
-        tmpnewchar = "贰" + tmpnewchar;
-        break;
-      case "3":
-        tmpnewchar = "叁" + tmpnewchar;
-        break;
-      case "4":
-        tmpnewchar = "肆" + tmpnewchar;
-        break;
-      case "5":
-        tmpnewchar = "伍" + tmpnewchar;
-        break;
-      case "6":
-        tmpnewchar = "陆" + tmpnewchar;
-        break;
-      case "7":
-        tmpnewchar = "柒" + tmpnewchar;
-        break;
-      case "8":
-        tmpnewchar = "捌" + tmpnewchar;
-        break;
-      case "9":
-        tmpnewchar = "玖" + tmpnewchar;
-        break;
+        case '0':
+          tmpnewchar = '零' + tmpnewchar
+          break
+        case '1':
+          tmpnewchar = '壹' + tmpnewchar
+          break
+        case '2':
+          tmpnewchar = '贰' + tmpnewchar
+          break
+        case '3':
+          tmpnewchar = '叁' + tmpnewchar
+          break
+        case '4':
+          tmpnewchar = '肆' + tmpnewchar
+          break
+        case '5':
+          tmpnewchar = '伍' + tmpnewchar
+          break
+        case '6':
+          tmpnewchar = '陆' + tmpnewchar
+          break
+        case '7':
+          tmpnewchar = '柒' + tmpnewchar
+          break
+        case '8':
+          tmpnewchar = '捌' + tmpnewchar
+          break
+        case '9':
+          tmpnewchar = '玖' + tmpnewchar
+          break
       }
       if (i == 0)
-        tmpnewchar = tmpnewchar + "角";
+        tmpnewchar = tmpnewchar + '角'
       if (i == 1)
-        tmpnewchar = tmpnewchar + "分";
-      newchar = newchar + tmpnewchar;
+        tmpnewchar = tmpnewchar + '分'
+      newchar = newchar + tmpnewchar
     }
   }
   //替换所有无用汉字
-  while (newchar.search("零零") != -1)
-    newchar = newchar.replace("零零", "零");
-    newchar = newchar.replace("零亿", "亿");
-    newchar = newchar.replace("亿万", "亿");
-    newchar = newchar.replace("零万", "万");
-    newchar = newchar.replace("零元", "元");
-    newchar = newchar.replace("零角", "");
-    newchar = newchar.replace("零分", "");
+  while (newchar.search('零零') != -1)
+    newchar = newchar.replace('零零', '零')
+  newchar = newchar.replace('零亿', '亿')
+  newchar = newchar.replace('亿万', '亿')
+  newchar = newchar.replace('零万', '万')
+  newchar = newchar.replace('零元', '元')
+  newchar = newchar.replace('零角', '')
+  newchar = newchar.replace('零分', '')
 
-    newchar = newchar.replace("亿万", "亿");
-    newchar = newchar.replace("兆亿", "兆");
-    newchar = newchar.replace("零兆", "兆");
-    newchar = newchar.replace("京兆", "京");
+  newchar = newchar.replace('亿万', '亿')
+  newchar = newchar.replace('兆亿', '兆')
+  newchar = newchar.replace('零兆', '兆')
+  newchar = newchar.replace('京兆', '京')
 
-  if (newchar.charAt(newchar.length - 1) == "元"
-      || newchar.charAt(newchar.length - 1) == "角")
-    newchar = newchar + "整";
+  if (newchar.charAt(newchar.length - 1) == '元'
+      || newchar.charAt(newchar.length - 1) == '角')
+    newchar = newchar + '整'
 
-  var digit = ['壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];
+  var digit = ['壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖']
   var _i = 0
   while(newchar.length > 0){
     if(digit.indexOf(newchar[0]) < 0){
-      newchar = newchar.substr(1);
+      newchar = newchar.substr(1)
     }else{
-      break;
+      break
     }
   }
 
-  var firstChar = Num.substring(0,1);
-  if(firstChar=="-"){
-    newchar = "负"+newchar;
+  var firstChar = Num.substring(0,1)
+  if(firstChar=='-'){
+    newchar = '负'+newchar
   }
 
-  var lastChar=newchar.charAt(newchar.length-1);
-  if("零" == lastChar){
-    newchar=newchar.substring(0,newchar.length-1);
-    newchar=newchar+"整";
+  var lastChar=newchar.charAt(newchar.length-1)
+  if('零' == lastChar){
+    newchar=newchar.substring(0,newchar.length-1)
+    newchar=newchar+'整'
   }
 
   if(parseFloat(Num)==0){
-    newchar="零元整";
+    newchar='零元整'
   }
-  return newchar;
+  return newchar
 }
 /**
  * @description 金额转大写
@@ -1431,19 +1440,19 @@ export function numtochinese (Num,suffixNumber) {
  * @param {Number} suffixNum 小数位数
  * @param {Boolean} isround 事否四舍五入
  */
-export function changeTipsVal (value,integerNum,suffixNum,isround){
-  value  = String(value).replace(/[^0-9\.-]/g,"");
-  var firstChar = value.substring(0,1);
-  value = cutNum(value,integerNum);
-  if(value.split(".")[1] && value.split(".")[1].length > 2){
+export function changeTipsVal(value,integerNum,suffixNum,isround){
+  value  = String(value).replace(/[^0-9\.-]/g,'')
+  var firstChar = value.substring(0,1)
+  value = cutNum(value,integerNum)
+  if(value.split('.')[1] && value.split('.')[1].length > 2){
     if(isround&&isround==true){
-      value = parseFloat(value).toFixedSelf(suffixNum);
+      value = parseFloat(value).toFixedSelf(suffixNum)
     }else{
-      var suf = value.split(".")[1].substr(0,suffixNum);
-      value = value.split(".")[0]+"."+suf;
+      var suf = value.split('.')[1].substr(0,suffixNum)
+      value = value.split('.')[0]+'.'+suf
     }
   }
-  return numtochinese(value + "",suffixNum);
+  return numtochinese(value + '',suffixNum)
 }
 /**
  * @description 数字千分位分割
@@ -1451,15 +1460,15 @@ export function changeTipsVal (value,integerNum,suffixNum,isround){
  * @param {String} num 金额数字
  */
 export function divideNum(num){
-  let revalue="";
-  let array=String(num).split(".");
+  let revalue='';
+  let array=String(num).split('.')
   let pointStr = array[1]?'.'+array[1]:''
-  array[0] = array[0].replace(/-/g, "")
+  array[0] = array[0].replace(/-/g, '')
   if(array[0].length>3){
     while(array[0].length>3){
-      revalue=","+array[0].substring(array[0].length-3,array[0].length)+revalue;
-      array[0]=array[0].substring(0,array[0].length-3);
+      revalue=','+array[0].substring(array[0].length-3,array[0].length)+revalue
+      array[0]=array[0].substring(0,array[0].length-3)
     }
   }
-  return num>=0?array[0]+revalue+pointStr:'-'+array[0]+revalue+pointStr;
+  return num>=0?array[0]+revalue+pointStr:'-'+array[0]+revalue+pointStr
 }

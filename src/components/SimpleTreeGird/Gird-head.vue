@@ -7,11 +7,11 @@
     <thead>
       <tr>
         <th v-for="(column, index) in columns"
-          v-on:mousedown="mousedown($event,column,index)" 
-          v-on:mouseout="mouseout($event,column,index)" 
+          v-on:mousedown="mousedown($event,column,index)"
+          v-on:mouseout="mouseout($event,column,index)"
           v-on:mousemove="mousemove($event,column,index)"
           :key="index"
-          :class="alignCls(column)" 
+          :class="alignCls(column)"
           >
           <div :class="[`${prefixCls}-cell`]">
             <Checkbox v-if="headSelection&&!index" @mousedown.native.stop="handleClick" @click.native.stop="selectAll" :value="isSelectAll" class="asyc-check"></Checkbox>
@@ -118,9 +118,9 @@ export default {
       if (!this.canDrag && !this.canMove) return;
       let _this = this;
       if (this.draggingColumn) {
-        this.dragging = true;      
+        this.dragging = true;
         this.$parent.resizeProxyVisible = true;
-        const table = this.$parent; 
+        const table = this.$parent;
         const tableEl = table.$el;
         const tableLeft = tableEl.getBoundingClientRect().left;
         const columnEl = this.$el.querySelector(`th.h-ui-${column.key}`);
@@ -145,7 +145,7 @@ export default {
 
         document.onselectstart = function() { return false; };
         document.ondragstart = function() { return false; };
-        
+
         const handleMouseMove = (event) => {
           const deltaLeft = event.clientX - this.dragState.startMouseLeft;
           const proxyLeft = this.dragState.startLeft + deltaLeft;
@@ -205,7 +205,7 @@ export default {
         let dom = this.findObj(event,'TH').cloneNode(true);
         dom.childNodes[0].style.width = column._width + "px";
         addClass(dom,'move-proxy-th');
-        const table = this.$parent; 
+        const table = this.$parent;
         const tableEl = table.$el;
         const tableLeft = tableEl.getBoundingClientRect().left;
         const tableTop = tableEl.getBoundingClientRect().top;
@@ -315,7 +315,7 @@ export default {
       while(obj&&obj.tagName!=name){
         obj=obj.parentElement
       }
-      return obj;      
+      return obj;
     },
     mouseout() {
       if (this.$isServer) return;

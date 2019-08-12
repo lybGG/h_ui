@@ -280,8 +280,16 @@ export default {
         ? publicVModelValue.map(formatDate)
         : formatDate(publicVModelValue)
     },
-    opened() {
-      return this.open === null ? this.visible : this.open
+//    opened() {
+//      return this.open === null ? this.visible : this.open
+//    },
+    opened: {
+      get:function() {
+        return this.open === null ? this.visible : this.open
+      },
+      set:function(val) {
+        this.visible = val
+      }
     },
     iconType() {
       let icon = 'activity'
@@ -461,7 +469,9 @@ export default {
     },
     focus() {
       if (this.disabled) return false
-      // this.$nextTick(()=>{
+//       this.$nextTick(()=>{
+      // 为了支持o45模式下form的firstNodeFocused()窗体不弹出
+      if(this.value !== '' && window.isO45) return false
       setTimeout(() => {
         if (!this.iconVisible) {
           this.visible = true
@@ -470,8 +480,8 @@ export default {
         this.isFocus = true
         if (this.$refs.input) this.$refs.input.focus()
       }, 0)
-      //   this.visible =status =='notShow'?false:true;
-      // })
+//        this.visible =status =='notShow'?false:true;
+//      })
     },
     blur() {
       if (this.isFocus) {

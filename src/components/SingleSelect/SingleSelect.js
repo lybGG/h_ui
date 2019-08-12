@@ -17,6 +17,10 @@ export default {
     accuFilter: {
       type: Boolean,
       default: true
+    },
+    showArrow:{
+      type: Boolean,
+      default: true
     }
   },
   data() {

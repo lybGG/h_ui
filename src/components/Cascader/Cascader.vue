@@ -42,7 +42,7 @@
             :data="data"
             :disabled="disabled"
             :change-on-select="changeOnSelect"
-            :trigger="trigger" 
+            :trigger="trigger"
             :multiple="multiple"></Caspanel>
           <div :class="[prefixCls + '-dropdown']" v-show="filterable && query !== '' && querySelections.length">
             <ul :class="[selectPrefixCls + '-dropdown-list']">
@@ -106,7 +106,7 @@
       readonly: {
         type: Boolean,
         default: false
-      },  
+      },
       placeholder: {
         type: String
       },
@@ -404,6 +404,9 @@
         this.isFocus = false;
         this.visible=false;
         this.$refs.input.blur();
+      },
+      select() {
+        this.$refs.input.select()
       },
       handleKeydown(e){
         const keyCode = e.keyCode;

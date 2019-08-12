@@ -401,6 +401,12 @@ export default {
         if (this.$children[0].readonly || this.$children[0].disabled) return
       }
       let prop = getPropByPath(model, path)
+      if(this.$el.querySelector('input')){
+        let input=this.$el.querySelector('input')
+         if(input.getAttribute('search')==='multiSelect'){
+              this.$children[0].isResetField=true
+         }
+      }
       if (Array.isArray(value)) {
         this.validateDisabled = true
         prop.o[prop.k] = [].concat(this.initialValue)

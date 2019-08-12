@@ -34,6 +34,7 @@
              :readonly="!editable||readonly"
              :class="[prefixCls + '-input']"
              style="width:100%"
+             search="multiSelect"
              :placeholder="showPlaceholder?localePlaceholder:''"
              @focus="handleFocus"
              @blur="handkeSearchBlur"
@@ -60,7 +61,8 @@
             @click.native.stop="clearSingleSelect"></Icon>
       <Icon name="unfold"
             :class="[prefixCls + '-arrow']"
-            v-if="!searchIcon && (!remote || showArrow)"
+            v-if="!searchIcon && (!remote || showArrow ||newSearchModel)"
+            @click.native.stop="arrowClick"
             ref="arrowb"></Icon>
       <Icon ref="searchIcon"
             :name="searchIcon"
@@ -448,9 +450,10 @@ export default {
       viewValue:null,
       isSelectAll:false,
       showTotal:false,
-      // selectedResult:'',
-      isSearchDelete:false,
-      isQuerySelect:false,
+      selectedResult:'',
+       isSearchDelete:false,
+       isQuerySelect:false,
+       isMultiSpecial:false,
       // newSearchModelselectItem:{},
       // isCopy:false,
       // newSearchCheckAll:false,
@@ -539,7 +542,8 @@ export default {
         this.clearable &&
         !this.showPlaceholder &&
         !this.readonly &&
-        !this.disabled
+        !this.disabled&&
+        !this.isSingleSelect
       )
     },
     inputStyle() {
@@ -642,7 +646,7 @@ export default {
       if (this.disabled || this.readonly || !this.editable) {
         return false
       }
-      if (event.keyCode == 9) {
+      if (event.keyCode == 9&&!this.isSingleSelect) {
         this.toggleMenu()
       }
     },
@@ -706,9 +710,14 @@ export default {
       }
     },
     showdrop(){
-        this.toggleMenu();  
+      if(!this.isSingleSelect){
+        this.toggleMenu();
+      }
     },
-     offsetArrow() {
+    arrowClick(){
+      this.toggleMenu();
+    },
+    offsetArrow() {
       if (!this.multiple) return
       let el = this.$refs.reference
       if (el.scrollHeight > el.clientHeight) {
@@ -720,7 +729,7 @@ export default {
       }
     },
     toggleMenu() {
-      if (this.disabled || !this.editable || this.readonly || this.isSingleSelect) {
+      if (this.disabled || !this.editable || this.readonly) {
         return false
       }
       this.visible = !this.visible
@@ -817,7 +826,8 @@ export default {
         if (!this.remote || this.isBlock) {
           this.updateSingleSelected(true, slot)
           this.updateMultipleSelected(true, slot)
-            if(this.newSearchModel&&this.selectedMultiple.length>0&&!this.isInputFocus){
+           //if(this.newSearchModel&&this.selectedMultiple.length>0&&!this.visible){
+            if(this.newSearchModel&&!this.visible){
               let multipleAry=[];
                 this.selectedMultiple.forEach(item=>{
                     multipleAry.push(item["label"]);
@@ -914,7 +924,6 @@ export default {
           if (this.model.length === selectedModel.length) {
             this.slotChangeDuration = true
           }
-
           this.model = selectedModel
         }
       }
@@ -1063,28 +1072,30 @@ export default {
       }
     },
     handleKeydown(e) {
-      if (this.visible) {
-        const keyCode = e.keyCode
+      const keyCode = e.keyCode
+      if(this.visible){
         // Esc slide-up
         if (keyCode === 27) {
           e.preventDefault()
           this.hideMenu()
         }
-        if(this.isSingleSelect){
-          if (keyCode === 39) {
-            e.preventDefault();
-            this.navigateOptions('next');
-          }
-          // left
-          if (keyCode === 37) {
-            e.preventDefault();
-            this.navigateOptions('prev');
-          }
-          if(keyCode === 39||keyCode === 37){
-            this.selectBlockSingle(this.focusValue)
-          }
-          return false
+      }
+      if(this.isSingleSelect){
+        if (keyCode === 39) {
+          e.preventDefault();
+          this.navigateOptions('next');
         }
+        // left
+        if (keyCode === 37) {
+          e.preventDefault();
+          this.navigateOptions('prev');
+        }
+        if(keyCode === 39||keyCode === 37){
+          this.selectBlockSingle(this.focusValue)
+        }
+        return false
+      }
+      if (this.visible) {
         // if(window.isO45){
           // right
           // if (keyCode === 39) {
@@ -1316,7 +1327,7 @@ export default {
         },0);
     },
     newModelSearchDelete(multipleAry){
-    if (this.multiple && this.selectedMultiple.length>0) {
+      if (this.multiple && this.selectedMultiple.length>0) {
         let searchAry=this.selectedResult.split(',');
             for(let i=0;i<multipleAry.length;i++){
               if(searchAry.indexOf(multipleAry[i])<0){
@@ -1545,7 +1556,12 @@ export default {
         this.query=''
       }
     },
-    selectBlockSingle(value,status=false) {
+     select() {
+      if (this.filterable) {
+        this.$refs.input.select()
+      }
+    },
+    selectBlockSingle(value,status=false,str) {
       this.isQuerySelect = status
       this.availableOptions = this.options
       this.selectToChangeQuery = true
@@ -1564,7 +1580,7 @@ export default {
         // });
         // }
       }
-      if(!this.isSingleSelect){
+     if(!this.isSingleSelect||str=='click'){
         this.hideMenu()
       }
     },
@@ -1597,6 +1613,7 @@ export default {
             if(searchAry.indexOf(specialItem[0].label)>-1){
                 let idx=searchAry.indexOf(specialItem[0].label)
                 searchAry.splice(idx,1);
+                this.isMultiSpecial=true;
                 this.selectedResult=searchAry.join(',');
             }
             this.removeTag(index);
@@ -1630,7 +1647,7 @@ export default {
     // 处理 remote 初始值
     this.updateLabel()
     this.$nextTick(() => {
-      this.broadcastQuery('')
+      if(!this.isSingleSelect) this.broadcastQuery('')
     })
     this.updateOptions(true) 
     this.$on('append', () => {
@@ -1645,7 +1662,7 @@ export default {
       this.slotChange()
       this.updateOptions(true, true)
     })
-    on(document, 'keydown', this.handleKeydown)
+    on(this.$refs.select, 'keydown', this.handleKeydown)
     // document.addEventListener('keydown', this.handleKeydown);
     this.$on('on-select-selected', (value, status) => {
       value = this.isBlock ? value : this.getFormatValue(value)
@@ -1723,7 +1740,7 @@ export default {
     }
   },
   beforeDestroy() {
-    off(document, 'keydown', this.handleKeydown)
+    off(this.$refs.select, 'keydown', this.handleKeydown)
     // document.removeEventListener('keydown', this.handleKeydown);
     this.broadcast('Drop', 'on-destroy-popper')
   },
@@ -1731,12 +1748,15 @@ export default {
     value: {
       immediate: true,
       handler(val) {
+        if(this.model==!val){
+          this.isQuerySelect = false
+        }
         if (this.multiple && this.isString) {
           this.model = this.strtoArr(val)
         } else {
           this.model = val
           // TODO
-        }
+        }       
         if (val === ''&&!this.visible) this.query = ''
       }
     },
@@ -1773,17 +1793,6 @@ export default {
             })
           }
         })
-        //        if (window.isO45) {
-//          if (this.filterable) {
-//            if (this.multiple) {
-//              this.$refs.input.focus()
-//            }else {
-//              if (this.focusSelect) {
-//                this.$refs.input.select()
-//              }
-//            }
-//          }
-//        }
         setTimeout(() => {
           this.dispatch('Msgbox', 'on-esc-real-close', false)
         }, 0)
@@ -1813,6 +1822,9 @@ export default {
       this.$emit('on-drop-change', val)
     },
     query(val) {
+      if(this.isSingleSelect&&this.isInputFocus){
+        if (!this.visible && val) this.visible = true;
+      }
       if (this.remote && this.remoteMethod) {
         if (!this.selectToChangeQuery) {
           // 解决当通过表单方法firstNodeFocused定位到SimpleSelect时只能输入但不展示下拉选项的问题
@@ -1853,7 +1865,7 @@ export default {
       // this.broadcast('Drop', 'on-update-popper');
     },
     selectedSingle(val) {
-      if (this.filterable && !this.showBottom && !this.isQuerySelect) {
+     if (this.filterable && !this.showBottom && !this.isQuerySelect) {
         this.query = val
         if (this.query !== '') this.selectToChangeQuery = true
       }

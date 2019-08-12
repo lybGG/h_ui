@@ -576,7 +576,6 @@
         }
       },
       select() {
-        this.toggleMenu()
         if (this.filterable) {
           this.$refs.input.focus()
           this.$refs.input.select()
