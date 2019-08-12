@@ -44,10 +44,6 @@ import Emitter from "../../mixins/emitter";
 const prefixCls = "h-input-number";
 const iconPrefixCls = "h-icon";
 
-// function isValueNumber(value) {
-//   return /(^-?[0-9]+\.{1}\d+$)|(^-?[1-9][0-9]*$)|(^-?0{1}$)/.test(value + '')
-// }
-
 function addNum(num1, num2) {
   let sq1, sq2, m;
   try {
@@ -137,16 +133,34 @@ export default {
     return {
       prefixCls: prefixCls,
       focused: false,
-      upDisabled: false,
-      downDisabled: false,
       currentValue: this.value,
       prepend: true,
       append: true,
-      viewValue: this.value, // 显示值
-      oldValue: ""
+      viewValue: this.value,
+      oldValue: "" // 上一次的值。用于在输入非法字符、超长数字时能马上回到上一步，实现无输入的效果
     };
   },
   computed: {
+    upDisabled: {
+      get() {
+        if (this.max) {
+          return this.viewValue >= this.max ? true : false;
+        }
+        return false;
+      },
+      set(val) {
+      }
+    },
+    downDisabled() {
+      if (this.min) {
+        return this.viewValue <= this.min ? true : false;
+      }
+      return false;
+    },
+    precisionRegExp() {
+      //用于小数位精度匹配的正则表达式
+      return new RegExp("\\.([0-9]{" + (this.precision + 1) + "})");
+    },
     wrapClasses() {
       return [
         `${prefixCls}`,
@@ -198,19 +212,12 @@ export default {
     inputClasses() {
       return `${prefixCls}-input`;
     }
-    // precisionValue() {
-    //   return this.precision
-    //     ? this.currentValue.toFixed(this.precision)
-    //     : this.currentValue
-    // },
   },
   methods: {
     preventDefault(e) {
       e.preventDefault();
     },
     up(e) {
-      console.log("============触发了 up===========");
-      console.log(e);
       const targetVal = Number(e.target.value);
       if (this.upDisabled && isNaN(targetVal)) {
         return false;
@@ -218,8 +225,6 @@ export default {
       this.changeStep("up", e);
     },
     down(e) {
-      console.log("============触发了 down===========");
-      console.log(e);
       const targetVal = Number(e.target.value);
       if (this.downDisabled && isNaN(targetVal)) {
         return false;
@@ -227,10 +232,6 @@ export default {
       this.changeStep("down", e);
     },
     changeStep(type, e) {
-      console.log("============触发了 changeStep===========");
-      console.log("type:" + type);
-      console.log("e:" + e);
-      console.log(e);
       if (this.disabled || this.readonly) {
         return false;
       }
@@ -240,7 +241,6 @@ export default {
       if (isNaN(val)) {
         return false;
       }
-      // input a number, and key up or down
       if (!isNaN(targetVal)) {
         if (type === "up") {
           if (addNum(targetVal, step) <= this.max) {
@@ -264,8 +264,6 @@ export default {
       this.setValue(val);
     },
     setValue(val) {
-      console.log("============触发了setValue===========");
-      console.log("val:" + val);
       // 如果 step 是小数，且没有设置 precision ，是有问题的
       if (!isNaN(this.precision) && val !== null) {
         val = Number(Number(val).toFixed(this.precision));
@@ -279,7 +277,7 @@ export default {
       });
     },
     focus(event) {
-      console.log("============触发了focus===========");
+      this.oldValue = this.viewValue.toString();
       if (this.focusAllSelect) {
         this.$refs.input.select();
       }
@@ -290,8 +288,6 @@ export default {
       this.$emit("on-focus", event);
     },
     blur(event) {
-      console.log("============触发了blur===========");
-      console.log(event);
       if (event == undefined) {
         this.focused = false;
         return;
@@ -304,20 +300,9 @@ export default {
       }
       let val = Number(event.target.value.trim());
       this.focused = false;
-      const { min, max } = this;
-      if (val !== null) {
-        if (val > max) {
-          this.setValue(max);
-        } else if (val < min) {
-          this.setValue(min);
-        } else {
-          this.setValue(val);
-        }
-      }
+      this.setValue(val);
     },
     keyDown(e) {
-      console.log("============触发了keydown===========");
-      console.log(e);
       if (e.keyCode === 38) {
         e.preventDefault();
         this.up(e);
@@ -327,90 +312,61 @@ export default {
       }
     },
     change(event) {
-      console.log("============触发了change===========");
-      console.log(event);
       let val = event.target.value.trim();
-      console.log("val:" + val);
-      // 设置setzero后 清空后置为0(有min时置为min[后续判断])
-      val = val == "" && this.setzero ? "0" : val;
+      val = val == "" && this.setzero ? "0" : val; // 设置setzero后 清空后置为0(有min时置为min[后续判断])
       const isEmptyString = val.length === 0;
       if (isEmptyString) {
         this.setValue(null);
         this.oldValue = null;
         return;
       }
-      if (event.type == "input" && val.match(/^\-?\.?$|\.$/)) return; // prevent fire early if decimal. If no more input the change event will fire later
-      // if (event.type == "change" && Number(val) === this.currentValue) return; // already fired change for input event
+      if (event.type == "input" && val.match(/^\-{1}\.?$/)) {
+        // 只检测负号 小数点由后面Number(val)！==NaN判断
+        this.oldValue = val.toString();
+        return;
+      }
+      if (event.type == "change" && Number(val) === this.currentValue) return; // already fired change for input event
+      if (this.precision && val.match(this.precisionRegExp)) {
+        event.target.value = this.oldValue;
+        return;
+      }
       const { min, max } = this;
-      val = Number(val);
-      if (!isNaN(val)) {
+      if (!isNaN(Number(val))) {
         this.currentValue = val;
         if (val > max) {
           val = max;
           event.target.value = val;
-          this.viewValue = val;
         } else if (val < min) {
           val = min;
           event.target.value = val;
-          this.viewValue = val;
-        } else {
-          this.downDisabled = false;
-          this.upDisabled = false;
         }
-        this.oldValue = val;
+        this.oldValue = val.toString();
       } else {
-        if (this.oldValue === null || this.oldValue === "") {
-          event.target.value = this.viewValue;
-        } else {
-          event.target.value = this.oldValue;
-        }
+        event.target.value = this.oldValue;
       }
     },
-    changeDisable() {},
 
     changeVal(val) {
-      console.log("============触发了 changeVal===========");
-      console.log("val:" + val);
-      console.log("this.currentValue:" + val);
-      console.log("this.viewValue:" + this.viewValue);
+      //外部改变数据时生效
       if (this.currentValue == null && this.viewValue != this.currentValue) {
         this.viewValue = null;
         return;
       }
+      const { min, max } = this;
       val = Number(val);
-
-      // this.$nextTick(
-      //   () => {
-      //   console.log("hhh");
-      //   this.upDisabled = false;
-      // });
-
       if (!isNaN(val)) {
         let step = this.step;
-
-        if (val >= this.max) {
-          // this.$nextTick(() => {
-          //   console.log("hhh");
-          //   this.upDisabled = true;
-          // });
+        if (val > max) {
+          this.setValue(max);
+        } else if (val < min) {
+          this.setValue(min);
         }
-        if (val <= this.max) {
-          // this.$nextTick(() => {
-          //   this.downDisabled = true;
-          // });
-        }
-        // this.upDisabled = val + step > this.max;
-      } else {
-        this.upDisabled = false;
-        this.downDisabled = false;
       }
-      // this.viewValue = val;
     },
     /**
      * @description 计算显示值
      */
     calcViewValue() {
-      console.log("============触发了 calcViewValue===========");
       if (this.notScientificNotation) {
         let s = scientificNotationToString(this.currentValue);
         this.viewValue = this.precision
@@ -426,8 +382,10 @@ export default {
   mounted() {
     this.changeVal(this.currentValue);
     if (this.value < this.min) this.setValue(this.min);
+    if (this.value > this.max) this.setValue(this.max);
     this.prepend = this.$slots.prepend !== undefined;
     this.append = this.$slots.append !== undefined;
+    this.oldValue = this.viewValue.toString();
   },
   watch: {
     value: {

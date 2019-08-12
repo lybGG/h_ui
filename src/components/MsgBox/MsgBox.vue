@@ -192,12 +192,13 @@ export default {
       screenWidth: null,
       curWidth: this.width,
       curHeight: 0,
+      tpLeft: 0,
       isMax: false,
       realClose: true, // esc时是否真正需要关闭弹出窗口
       // 弹框内容渲染标识
       rendered: false,
       WindosInnerHeight: window.innerHeight,
-      
+
       headerHeight: 0,
       footerHeight: 0
     };
@@ -230,12 +231,16 @@ export default {
       if (this.height && this.height < 100 && !this.curHeight) {
         styleWidth.height = `${this.height}%`;
       }
-      // style.top = this.isMax ? "0" : this.top + "px";
       style.top = this.isMax ? "0" : this.actualTop + "px";
-      style.left =
-        this.left == undefined
-          ? (this.screenWidth - offsetWidth) / 2 + "px"
-          : this.left + "px";
+      if (this.isMax) {
+        style.left = "0px";
+      } else {
+        style.left =
+          this.left == undefined
+            ? (this.screenWidth - offsetWidth) / 2 + "px"
+            : this.left + "px";
+      }
+
       const customStyle = this.styles ? this.styles : {};
       Object.assign(style, styleWidth, customStyle);
       return style;
@@ -326,11 +331,15 @@ export default {
       };
       if (Number(this.top) <= 0) this.$refs.wrap.style.display = "flex";
       obj.style.top = this.actualTop + "px";
-      // obj.style.top = this.top + "px";
-      obj.style.left =
-        this.left == undefined
-          ? (this.screenWidth - width) / 2 + "px"
-          : this.left + "px";
+
+      if (this.isMax) {
+        obj.style.left = "0px";
+      } else {
+        obj.style.left =
+          this.left == undefined
+            ? (this.screenWidth - width) / 2 + "px"
+            : this.left + "px";
+      }
     },
     mask() {
       if (this.maskClosable) {
