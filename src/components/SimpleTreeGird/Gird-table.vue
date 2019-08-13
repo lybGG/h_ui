@@ -805,8 +805,16 @@ export default {
   },
   watch: {
     data: {
-      handler () {
+      handler (val) {
         this.handleResize();
+        if(this.rebuildData.length === 0 || val.length === 0) {
+          if(this.$refs.body) {
+            this.$refs.body.scrollLeft = 0
+          }
+          if(this.$refs.header) {
+            this.$refs.header.scrollLeft = 0
+          }
+        }
         this.rebuildData = this.data
       },
       deep: true

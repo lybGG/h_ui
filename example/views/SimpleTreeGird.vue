@@ -191,7 +191,7 @@ export default {
       // this.treedata = jsonData.slice(0, 100);
       this.$nextTick(() => {
         let newDate = new Date().getTime() - old
-        console.log(newDate)
+//        console.log(newDate)
       })
       // setTimeout(() => {
       //   // this.$refs.treeGird.selectRow(51, true)

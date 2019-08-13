@@ -10,6 +10,7 @@
       :maxlength="maxlength"
       :tabindex="tabindex"
       @blur="blurValue"
+      @keydown.stop="keyDown"
       @input="valChange"
       @change="valChange"
       @focus="focusValue($event)"
@@ -34,6 +35,23 @@ import Locale from '../../mixins/locale';
 import Drop from '../Select/Dropdown.vue'
 import TransferDom from '../../directives/transfer-dom';
 const prefixCls = 'h-typefield';
+
+function addNum(num1, num2) {
+  let sq1, sq2, m
+  try {
+    sq1 = num1.toString().split('.')[1].length
+  } catch (e) {
+    sq1 = 0
+  }
+  try {
+    sq2 = num2.toString().split('.')[1].length
+  } catch (e) {
+    sq2 = 0
+  }
+  m = Math.pow(10, Math.max(sq1, sq2))
+  return (Math.round(num1 * m) + Math.round(num2 * m)) / m
+}
+
 export default {
   name: 'Typefield',
   directives: { TransferDom },
@@ -56,7 +74,7 @@ export default {
   mixins: [ Emitter,Locale ],
   props: {
     type: {
-      validator (value){
+      validator(value){
         return oneOf(value,['money','cardNo'])
       },
       default:'money'
@@ -146,10 +164,22 @@ export default {
         let num = parseInt(value);
         return num <= 32767 && num >= -1;
       }
-    }
+    },
+    max: {
+      type: Number,
+      default: Infinity
+    },
+    min: {
+      type: Number,
+      default: -Infinity
+    },
+    step: {
+      type: Number,
+      default: 1
+    },
   },
   computed: {
-    clazz () {
+    clazz() {
       return [
         `${prefixCls}`,
         {
@@ -164,20 +194,20 @@ export default {
         }
       ]
     },
-    tipzz () {
+    tipzz() {
       return `${prefixCls}-tip`;
     },
-    classes () {
+    classes() {
       return `${prefixCls}-${this.algin}`;
     },
-    localePlaceholder () {
+    localePlaceholder() {
       if (this.setNull) {
         return '';
       }
       if (this.placeholder === undefined) {
-          return this.t('i.typefield.placeholder');
+        return this.t('i.typefield.placeholder');
       } else {
-          return this.placeholder;
+        return this.placeholder;
       }
     },
   },
@@ -192,14 +222,14 @@ export default {
     },
     tipShow(val){
       if (val&&this.transfer) {
-          this.$refs.drop.update();
+        this.$refs.drop.update();
       }
       // else {
       //     this.$refs.drop.destroy();
       // }
     }
   },
-  mounted () {
+  mounted() {
     this.prepend = this.$slots.prepend !== undefined;
     this.append = this.$slots.append !== undefined;
     if(this.value !=null||this.value!=undefined){
@@ -207,17 +237,83 @@ export default {
     }
   },
   methods:{
+    keyDown(e) {
+      if(window.isO45) {
+        if (e.keyCode === 39) {
+          e.preventDefault()
+          this.up(e)
+        } else if (e.keyCode === 37) {
+          e.preventDefault()
+          this.down(e)
+        }
+      }
+    },
+    up(e) {
+      const targetVal = Number(e.target.value)
+      if (isNaN(targetVal)) {
+        return false
+      }
+      this.changeStep('up', e)
+    },
+    down(e) {
+      const targetVal = Number(e.target.value)
+      if (isNaN(targetVal)) {
+        return false
+      }
+      this.changeStep('down', e)
+    },
+    changeStep(type, e) {
+      if (this.disabled || this.readonly) {
+        return false
+      }
+      const targetVal = Number(e.target.value)
+      let val = Number(this.currentValue)
+      const step = Number(this.step)
+      if (isNaN(val)) {
+        return false
+      }
+      if (!isNaN(targetVal)) {
+        if (type === 'up') {
+          if (addNum(targetVal, step) <= this.max) {
+            val = targetVal
+          } else {
+            return false
+          }
+        } else if (type === 'down') {
+          if (addNum(targetVal, -step) >= this.min) {
+            val = targetVal
+          } else {
+            return false
+          }
+        }
+      }
+      if (type === 'up') {
+        val = addNum(val, step)
+      } else if (type === 'down') {
+        val = addNum(val, -step)
+      }
+      this.$nextTick(() => {
+        this.currentValue = val
+        this.$emit('input', val)
+        this.$emit('on-change', val)
+        this.dispatch('FormItem', 'on-form-change', val)
+      })
+    },
     // keyup,focus,blur
-    blurValue (e) {
+    blurValue(e) {
       this.havefocused = false;
       this.focused = false;
       if (this.type=='money') {
         this.tipShow=false;
       }
       let val = this.inputValue?this.inputValue.trim():this.inputValue;
-      if (val && val!="") {
+      if (val && val!=="") {
         val = this.notFormat?e.target.value:this.formatNum(e.target.value.trim().replace(/,/g,''),this.integerNum,this.suffixNum);
-        if ((this.divided || this.immeDivided) && this.type=="money") {
+        if(val > this.max)
+          val = this.max
+        if(val < this.min)
+          val = this.min
+        if ((this.divided || this.immeDivided) && this.type==="money") {
           this.inputValue = divideNum(val);
         }else{
           this.inputValue = val;
@@ -240,14 +336,14 @@ export default {
       }
       return val;
     },
-    blur () {
+    blur() {
       this.havefocused = false;
       this.$refs.input.blur();
       // this.$emit('on-blur')
       this.$emit('input', this.cardFormatValue(this.inputValue));
       this.dispatch('FormItem', 'on-form-blur', this.inputValue)
     },
-    focusValue (e) {
+    focusValue(e) {
       if (this.readonly||this.disabled) return false;
       this.focused = true;
       this.havefocused = true;
@@ -285,7 +381,7 @@ export default {
     select() {
       this.$refs.input.select()
     },
-    valChange (event) {
+    valChange(event) {
       let value = event.target.value.trim().replace(/,/g,'');
       // if (event.type == 'input' && value.match(/^\-?\.?$|\.$/)) return; // prevent fire early if decimal. If no more input the change event will fire later
       // if (event.type == 'change' && Number(value) == this.currentValue) return; // already fired change for input event
@@ -293,7 +389,6 @@ export default {
         value = value.replace(/-/, '')
         event.target.value = value
       }
-
       if (!isNaN(value) || value === '-') {
         this.currentValue = value;
       } else {
@@ -459,7 +554,7 @@ export default {
         s_x += '.';
       }
       while (s_x.length <= pos_decimal + bitNum && !this.notFillin) {
-          s_x += '0';
+        s_x += '0';
       }
       if (bitNum==0) {
         s_x = s_x.slice(0,pos_decimal);

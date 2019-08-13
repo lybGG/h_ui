@@ -8,7 +8,8 @@
                      style="width:200px;"
                      filterable
                      v-model="value2"
-                     @on-change="change">
+                     @on-change="change"
+                      @on-blur="handleBlur">
       <!-- <div slot="header">
         <h-button @click="selectAll(true)">全选</h-button>
         <h-button @click="selectAll(false)">全不选</h-button>
@@ -54,8 +55,6 @@
       <!-- <h-select-block :data="v20190321.options2"></h-select-block> -->
     </h-simple-select> -->
     {{v20190321.value}}
-    <Button @on-click="simSel(true)">获取焦点</Button>
-    <Button @on-click="simSel(false)">失去焦点</Button>
 
     <h-simple-select filterable
                      isArrow="false"
@@ -217,13 +216,6 @@ export default {
     },
     handleChange(e) {
       console.log(e)
-    },
-    simSel(val) {
-      if (val) {
-        this.$refs.simSel.focus()
-      } else {
-        this.$refs.simSel.blur()
-      }
     },
     selectAll(status){
       this.$refs.ceshi.toggleSelect(status)

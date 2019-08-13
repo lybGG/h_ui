@@ -490,6 +490,10 @@ export default {
       type:Boolean,//多选时是否支持点击行只选中，再次点击不进行反选
       default:false
     },
+    isMulitSort:{//多列排序
+      type:Boolean,
+      default:false,
+    }
   },
   data() {
     return {
@@ -1099,12 +1103,20 @@ export default {
       }
       if(column.sortable) {
         const type = column._sortType
-        if (type === 'normal') {
-          this.handleSort(index, 'asc')
-        } else if (type === 'asc') {
-          this.handleSort(index, 'desc')
-        } else {
-          this.handleSort(index, 'normal')
+        if(column.type === 'selection') {
+          if(type === 'normal') {
+            this.handleSort(index, 'asc')
+          }else {
+            this.handleSort(index, 'normal')
+          }
+        }else {
+          if (type === 'normal') {
+            this.handleSort(index, 'asc')
+          } else if (type === 'asc') {
+            this.handleSort(index, 'desc')
+          } else {
+            this.handleSort(index, 'normal')
+          }
         }
       }
     },
@@ -1177,8 +1189,8 @@ export default {
           Math.floor(this.$refs.body.scrollTop / this.itemHeight) *
           this.itemHeight
         if(this.$refs.fixedBody){
-            this.$refs.fixedBody.scrollTop =this.$refs.body.scrollTop
-          }
+          this.$refs.fixedBody.scrollTop =this.$refs.body.scrollTop
+        }
         if (this.scrollbarToZero) {
           transformTop = 0
           this.$refs.body.scrollTop = 0
@@ -1505,12 +1517,12 @@ export default {
       return status
         ? selectionIndexes
         : JSON.parse(
-            JSON.stringify(
-              this.cloneData.filter(
-                (data, index) => selectionIndexes.indexOf(index) > -1
-              )
+          JSON.stringify(
+            this.cloneData.filter(
+              (data, index) => selectionIndexes.indexOf(index) > -1
             )
           )
+        )
     },
     toggleSelect(_index, curIndex) {
       if(this.highlightRow){
@@ -1602,6 +1614,19 @@ export default {
         })
       }, 0)
     },
+    /**
+     * 获取所有列选中的排序件
+     */
+    getSorts() {
+      const cloneColumns = this.cloneColumns;
+      const filters = {};
+      cloneColumns.forEach(col => {
+        if (col.sortable&&col._sortType!='normal') {
+          filters[col.key] = col._sortType;
+        }
+      })
+      return filters;
+    },
     handleSort(index, type) {
       if (this.cloneColumns[index]._sortType === type) {
         type = 'normal'
@@ -1619,7 +1644,49 @@ export default {
       }
       this.sortIndex = index
       let _index = this.cloneColumns[index]._index
+      //【TS:201907290144-资管业委会（资管）_孔磊-【需求类型】需求【需求描述】表格1、勾选框列可以排序，选中的在上面】
+      const columnType = this.cloneColumns[index].type
+      const key = this.cloneColumns[index].key
+      if(columnType === 'selection') {
+        this.rebuildData = this.sortDataBySelect(this.getSelection(true), this.rebuildData, type)
+        this.cloneColumns[index]._sortType = type
+        this.$nextTick(() => {
+          this.$emit('on-sort-change', {
+            column: JSON.parse(
+              JSON.stringify(this.columns[this.cloneColumns[index]._index])
+            ),
+            key: key,
+            order: type
+          })
+          this.updateVisibleData()
+        })
+        return
+      }
       this.handleSortT(_index, type)
+    },
+    sortDataBySelect(checkData, data, type) {
+      //勾选排上面
+      let d = []
+      if(type === 'asc') {
+        for(let i of checkData) {
+          for(let j in data) {
+            if(data[j]._index === i) {
+              d.push(data[j])
+              data.splice(j, 1)
+            }
+          }
+        }
+        data = d.concat(data)
+      }else {
+        data.sort((a, b) => {
+          if(a._index > b._index) {
+            return 1
+          } else {
+            return -1
+          }
+        })
+      }
+      return data
     },
     handleSortByHead(index) {
       const column = this.cloneColumns[index]
@@ -1650,18 +1717,21 @@ export default {
       return data
     },
     handleSortT(_index, type) {
-//      const columnType = this.cloneColumns[_index].type
-//      if(columnType === 'selection') {
-//
-//      }
-
       let index
       this.cloneColumns.forEach((col, i) => {
-        col._sortType = 'normal'
+        if(!this.isMulitSort) {
+          col._sortType = 'normal'
+        }
         if (col._index == _index) {
           index = i
         }
-      }) //rightFixed index error
+      })
+      //rightFixed index error
+      this.cloneColumns[index]._sortType = type
+      if(this.isMulitSort){
+        this.$emit('on-sort-change',JSON.parse(JSON.stringify(this.getSorts())))
+        return
+      }
       const key = this.cloneColumns[index].key
       if (this.cloneColumns[index].sortable !== 'custom') {
         let selectInx = -1
@@ -1682,8 +1752,6 @@ export default {
           })
         }
       }
-      this.cloneColumns[index]._sortType = type
-
       this.$nextTick(() => {
         this.$emit('on-sort-change', {
           column: JSON.parse(
@@ -2226,11 +2294,7 @@ export default {
           this.keySelectRange()
         }
       }
-    },
-    //勾选排序在上
-    selectedTop(status=true) {
-      this.broadcast('Block', 'on-select-top',status)
-    },
+    }
   },
   created() {
     if (!this.context) this.currentContext = this.$parent

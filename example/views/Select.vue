@@ -242,7 +242,15 @@
                     :key="item.id">{{ item.name }}</h-option>
         </h-select>
         {{model9}}
-
+        <h-select v-model="model9" width="260" multiple>
+          <div slot="header">
+            <h-button @click="selectAll(true)">全选</h-button>
+            <h-button @click="selectAll(false)">反选</h-button>
+          </div>
+          <h-option v-for="(item, index) in uList"
+                    :value="item.id"
+                    :key="item.id">{{ item.name }}</h-option>
+        </h-select>
       </div>
       <h1>
         filterable:可搜索（可直接配置 filterable，或配置 filterable属性为true），多选模式下可以使用键盘delete键删除最后一个选项
@@ -263,7 +271,7 @@
         <span>多选可搜索:</span>
         <h-select v-model="model11"
                   width="200"
-                  :multiple="multiple"
+                  multiple
                   @on-blur="blurH"
                   filterable
                   :isString="true"
@@ -280,7 +288,7 @@
                   filterable
                   @on-blur="blurH"
                   :showBottom="true"
-                  searchHolder="123"
+                  searchHolder="输入搜索内容"
                   :transfer="true">
           <h-option v-for="(item, index) in uList"
                     :value="item.id"
@@ -296,6 +304,7 @@
                   :showBottom="true"
                   checkToHead
                   :transfer="true">
+
           <h-option v-for="(item, index) in uList"
                     :value="item.id"
                     :key="item.id">{{ item.name }}</h-option>
@@ -593,7 +602,6 @@ for(let i=0;i<1000;i++){
 export default {
   data() {
     return {
-      multiple: true,
       canPage: true,
       isComputed: false,
       cityList: [],
@@ -769,6 +777,9 @@ export default {
     }
   },
   methods: {
+    selectAll() {
+
+    },
     handle(d) {
       console.log(d);
     },

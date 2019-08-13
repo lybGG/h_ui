@@ -38,7 +38,7 @@
           :clickToSelect ="clickToSelect"
           :showTitle="showTitle"></table-body>
       </div>
-      <div :class="[prefixCls + '-tip'] "
+      <div :class="[prefixCls + '-tip']" ref="tip"
         v-show="((!!localeNoDataText && (!data || data.length === 0)) || (!!localeNoFilteredDataText && (!rebuildData || rebuildData.length === 0)))" @scroll="handleBodyScroll" :style="bodyStyle">
         <div :class="[prefixCls+'-tiptext']" :style="textStyle" >
           <slot name="nodata">
@@ -1750,13 +1750,27 @@ export default {
   },
   watch: {
       data: {
-        handler () {
+        handler (val) {
           const oldDataLen = this.rebuildData.length;
           this.rebuildData = this.makeDataWithSortAndFilter();
           this.objData = this.makeObjData();
           this.handleResize();
           if (!oldDataLen) {
             this.fixedHeader();
+          }
+          if(oldDataLen === 0 || val.length === 0) {
+            if(this.$refs.header) {
+              this.$refs.header.scrollLeft = 0
+            }
+            if(this.$refs.body) {
+              this.$refs.body.scrollLeft = 0
+            }
+            if(this.$refs.tip) {
+              this.$refs.tip.scrollLeft = 0
+            }
+            if(this.$refs.summation) {
+              this.$refs.summation.style.marginLeft = 0
+            }
           }
           // here will trigger before clickCurrentRow, so use async
           this.$nextTick(()=>{

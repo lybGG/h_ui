@@ -8,7 +8,7 @@
       <span v-if="!column.renderHeader">{{ column.title || '#' }}</span>
       <render-header v-else :render="column.renderHeader" :column="column" :index="index"></render-header>
     </template>
-    <span :class="[prefixCls + '-sort']" v-if="column.sortable&&!useNewSort">
+    <span :class="[prefixCls + '-sort']" v-if="column.sortable&&!useNewSort&&column.type!=='selection'">
       <Icon name="android-arrow-dropup" :class="{on: column._sortType === 'asc'}" @on-click="handleSort(index, 'asc')" @mousedown.native.stop="handleClick"></Icon>
       <Icon name="android-arrow-dropdo" :class="{on: column._sortType === 'desc'}" @on-click="handleSort(index, 'desc')" @mousedown.native.stop="handleClick"></Icon>
     </span>
