@@ -198,7 +198,6 @@ export default {
       // 弹框内容渲染标识
       rendered: false,
       WindosInnerHeight: window.innerHeight,
-
       headerHeight: 0,
       footerHeight: 0
     };
@@ -272,13 +271,18 @@ export default {
     },
     contentStyle() {
       let style = {};
-      if (this.height) {
-        style.height = this.height <= 100 ? `auto` : `${this.height}px`;
-        style.overflowY = "auto";
-      }
-      if (this.maxHeight) {
-        style.maxHeight = `${this.maxHeight}px`;
-        style.overflowY = "auto";
+      style.overflowY = "auto";
+      if (this.isMax) {
+        let mHeigth = this.curHeight - this.headerHeight - this.footerHeight;
+        style.height = `${mHeigth}px`;
+        style.maxHeight = `${mHeigth}px`;
+      } else {
+        if (this.height) {
+          style.height = this.height <= 100 ? `auto` : `${this.height}px`;
+        }
+        if (this.maxHeight) {
+          style.maxHeight = `${this.maxHeight}px`;
+        }
       }
       return style;
     },
@@ -293,7 +297,8 @@ export default {
       let fHeight = this.footerHide ? 0 : this.headerHeight;
       let allHeight = hHeight + fHeight + this.height;
       return this.top + (allHeight - this.WindosInnerHeight) / 2;
-    }
+    },
+    actualHeight() {}
   },
   methods: {
     close() {
@@ -320,8 +325,10 @@ export default {
         this.curWidth = this.width;
         this.curHeight = 0;
       }
-      this.isMax = !this.isMax;
-      this.$emit("on-maximize", this.isMax);
+      this.$nextTick(() => {
+        this.isMax = !this.isMax;
+        this.$emit("on-maximize", this.isMax);
+      });
     },
     backOrigin() {
       const obj = this.$refs.content;
