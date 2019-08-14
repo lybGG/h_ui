@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>基础用法</h1>
+    <h-input v-model="value1"></h-input>
     {{value1}}
     <h-input-number :max="100"
                     :min="9"

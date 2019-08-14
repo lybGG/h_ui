@@ -235,7 +235,7 @@ export default {
       }
       val = val > this.max ? this.max : val;
       val = val < this.min ? this.min : val;
-      this.oldValue=val
+      this.oldValue = val;
       this.setValue(val);
     },
     setValue(val) {
@@ -280,7 +280,7 @@ export default {
       }
       this.setValue(val);
     },
-    keyDown(e) { 
+    keyDown(e) {
       if (e.keyCode === 38) {
         e.preventDefault();
         this.up(e);
@@ -310,7 +310,6 @@ export default {
       }
       const { min, max } = this;
       if (!isNaN(Number(val))) {
-        // this.currentValue = val;
         if (val > max) {
           val = max;
         }
@@ -320,7 +319,7 @@ export default {
         //   event.target.value = val;
         // }
         event.target.value = val;
-        this.viewValue=val
+        this.viewValue = val;
         this.oldValue = val.toString();
       } else {
         event.target.value = this.oldValue;
@@ -339,9 +338,7 @@ export default {
         let step = this.step;
         if (val > max) {
           this.setValue(max);
-        }
-        // 小于最小值时不做处理，避免min大于两位时不能输入单个数字
-        else if (val < min) {
+        } else if (val < min) {
           this.setValue(min);
         }
       }
@@ -357,7 +354,7 @@ export default {
           : s;
       } else {
         this.viewValue = this.precision
-          ? this.currentValue.toFixed(this.precision)
+          ? Number(this.currentValue).toFixed(this.precision)
           : this.currentValue;
       }
     }
