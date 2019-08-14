@@ -4,11 +4,11 @@
     <h1>金额</h1>
     <h2>基本用法</h2>
     <h1>algin设置左中右</h1>
-    <!-- <p>未开启四舍五入 整数位3位，小数位3为</p>
-    <h-typefield  v-model="valuetest1" integerNum="3" suffixNum="3" type="money" placeholder="金额" bigTips setNull></h-typefield>
+    <p>未开启四舍五入 整数位3位，小数位3为</p>
+    <h-typefield  v-model="valuetest1"  suffixNum="4" type="money" placeholder="金额" bigTips setNull></h-typefield>
     <p>开启四舍五入</p>
-    <h-typefield  v-model="valuetest2" integerNum="2" suffixNum="2" type="money" placeholder="金额" bigTips isround></h-typefield> -->
-
+    <h-typefield  v-model="valuetest2" integerNum="2" suffixNum="2" type="money" placeholder="金额" bigTips isround></h-typefield>
+<!-- 
     {{value11}}
       <h-typefield v-model="value11" hoverTips immeDivided focusAllSelect integerNum="17" suffixNum="2" type="money" bigTips placeholder="金额"  @on-blur="s" style="width:300px" algin="left" ref="test"></h-typefield>
       <Button @on-click="testClick(true)">获取焦点</Button>
@@ -66,7 +66,7 @@
     <h-typefield v-model="cardNo" type="cardNo" maxlength="11" :cardFormat="false" placeholder="卡号" bigTips></h-typefield>
     <br>
     <h1>事件</h1>
-    <h-typefield placeholder="焦点事件" @on-blur="bChange" @on-focus="fChange" @on-keyup="kChange"></h-typefield>
+    <h-typefield placeholder="焦点事件" @on-blur="bChange" @on-focus="fChange" @on-keyup="kChange"></h-typefield> -->
   </div>
 </template>
 
