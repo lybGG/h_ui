@@ -5,7 +5,7 @@
     <h2>基本用法</h2>
     <h1>algin设置左中右</h1>
     <p>未开启四舍五入 整数位3位，小数位3为</p>
-    <h-typefield  v-model="valuetest1"  suffixNum="4" type="money" placeholder="金额" bigTips setNull></h-typefield>
+    <h-typefield  v-model="valuetest1"  suffixNum="0" type="money" placeholder="金额" bigTips setNull></h-typefield>
     <p>开启四舍五入</p>
     <h-typefield  v-model="valuetest2" integerNum="2" suffixNum="2" type="money" placeholder="金额" bigTips isround></h-typefield>
 <!-- 

@@ -436,6 +436,8 @@ export default {
     },
     valChange(event) {
       let value = event.target.value.trim().replace(/,/g, "");
+      // console.log("event.target.value " + event.target.value);
+      // console.log("value " + value);
       // if (event.type == 'input' && value.match(/^\-?\.?$|\.$/)) return; // prevent fire early if decimal. If no more input the change event will fire later
       // if (event.type == 'change' && Number(value) == this.currentValue) return; // already fired change for input event
 
@@ -444,7 +446,15 @@ export default {
         event.target.value = this.currentValue;
         value = this.currentValue;
       }
-      if (!this.isround && value.match(this.precisionRegExp)) {
+      // console.log("suffixnum" + this.suffixNum);
+      if (this.isround) {
+        //四舍五入模式下不做操作
+      } else if (Number(this.suffixNum) === 0 && value.match(/\./)) {
+        console.log("match");
+        // 小数位为0时不允许输入小数点
+        event.target.value = this.currentValue;
+        value = this.currentValue;
+      } else if (value.match(this.precisionRegExp)) {
         //匹配小数位数；非四舍五入模式下，超过指定位数后不允许继续输入
         event.target.value = this.currentValue;
         value = this.currentValue;
@@ -659,7 +669,7 @@ export default {
       }
     },
     setNullStr() {
-      let str = this.suffixNum === 0 ? "0" : "0.";
+      let str = Number(this.suffixNum) === 0 ? "0" : "0.";
       for (var i = this.suffixNum - 1; i >= 0; i--) {
         str += "0";
       }
