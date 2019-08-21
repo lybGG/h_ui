@@ -10,8 +10,10 @@
       <br>
       <i>@on-change：当点击转移按钮时，组件本身并不会转移数据，而是触发事件，由用户来操作数据。</i>
     </p>
+    <Button @on-click="clear">清除搜索框</Button>
     <h2>noEdit</h2>
     <h-transfer-table
+      ref="transfer"
       filterable
       :filterMethod="filter"
       :lColumns="columns"
@@ -376,6 +378,10 @@ export default {
     }
   },
   methods: {
+    clear(){
+      this.$refs.transfer.clearSearch('left')
+      this.$refs.transfer.clearSearch('right')
+    },
     sureMove(keys,dir,isAll){
       if(keys.length>1){
         return false

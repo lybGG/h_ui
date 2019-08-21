@@ -8,9 +8,9 @@
        <h-button @click="click('4')">设置4</h-button>
       </h-col>
       <Button @on-click="testClick(true)">获取焦点</Button>
-      <Button @on-click="testClick(false)">失去焦点</Button>s
+      <Button @on-click="testClick(false)">失去焦点</Button>
       <h-col span="8">
-        <h-select-tree v-model="valc" :first-value="firstValc" style="width:200px" :data="baseData1" placement="top" placeholder="你好" ref="test"></h-select-tree>
+        <h-select-tree v-model="valc" :first-value="firstValc" style="width:200px" :data="baseData1" placement="top" placeholder="你好" filterable ref="test"></h-select-tree>
       </h-col>
       <h-button @click="ceshi">清空</h-button>
       <h-col span="8">

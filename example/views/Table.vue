@@ -15,7 +15,7 @@
     <Button @click="removeData">删除数据</Button>
      <!-- :multiLevel="multiLevel1" -->
      <!-- :multiLevel="multiLevel2"  -->
-    <h-table :columns="columns" :data="data0" :summationData="summationData1" border :highlight-row="true" isMulitSort @on-sort-change="sortchange" @on-current-change="click1" :loading="loading" headAlgin="right" bodyAlgin="left" @on-drag="onDrag" height="300" canMove @on-move="onMove" :lastColWidth="150">
+    <h-table :columns="columns" :data="data0" :summationData="summationData1" border :highlight-row="true" @on-sort-change="sortchange" @on-current-change="click1" :loading="loading" headAlgin="right" bodyAlgin="left" @on-drag="onDrag" height="300" canMove @on-move="onMove" :lastColWidth="150">
       <span slot="loading">我是自定义加载！！！</span>
     </h-table>
     <!--<h-button @click="setLoading">切换状态</h-button>-->
@@ -201,7 +201,6 @@ export default {
           title: '年龄1',
           key: 'age',
           ellipsis:true,
-          sortable: true
         },
         {
           title: '省份',
@@ -1963,10 +1962,7 @@ export default {
         },
         {
           title: '地址',
-          // ellipsis:true,
           key: 'address',
-                    // fixed:'right'
-          // hiddenCol:true,
         },
         {
           title: '地址1',

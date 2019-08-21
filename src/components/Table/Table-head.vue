@@ -15,6 +15,7 @@
           v-on:mousedown="mousedown($event,column,index)"
           v-on:mouseout="mouseout($event,column,index)"
           v-on:mousemove="mousemove($event,column,index)"
+          v-on:mouseup="mouseup($event,column,index)"
           :key="index"
           :class="alignCls(column)"
           >
@@ -119,7 +120,8 @@ export default {
       cloumnsLeft:{},
       multiData:null,
       isCurrent: true,
-      sortIndex: 0
+      sortIndex: 0,
+      beginLocation: {}
     }
   },
   computed: {
@@ -148,23 +150,11 @@ export default {
   },
   mounted(){
     this.getLeftWidth();
-    on(document, 'keyup', this.handleKeyup);
     //  this.changeMultiData(this.multiLevel);
     this.multiData = this.multiLevel;
     on(window, 'resize', this.getLeftWidth);
   },
   methods: {
-    handleKeyup(e) {
-      if (this.isCurrent && !e.shiftKey) {
-        const keyCode = e.keyCode
-        // ctrl
-        if (keyCode === 17) {
-          e.preventDefault()
-          e.stopPropagation()
-          this.cancelSort()
-        }
-      }
-    },
     cellClasses (column) {
       return [
         `${this.prefixCls}-cell`,
@@ -185,7 +175,7 @@ export default {
       return [
         `${this.prefixCls}-filter-select-item`,
         {
-            [`${this.prefixCls}-filter-select-item-selected`]: !column._filterChecked.length
+          [`${this.prefixCls}-filter-select-item-selected`]: !column._filterChecked.length
         }
       ];
     },
@@ -213,9 +203,6 @@ export default {
           this.handleSort(index, 'normal');
         }
       }
-    },
-    cancelSort() {
-      this.handleSort(this.sortIndex, 'normal');
     },
     handleFilter (index) {
       let _index = this.columns[index]._index;
@@ -245,6 +232,8 @@ export default {
       })
     },
     mousedown(event,column,index){
+      this.beginLocation.clientX = event.clientX
+      this.beginLocation.clientY = event.clientY
       if (this.$isServer) return;
       if (!column) return;
       let _this = this;
@@ -337,7 +326,7 @@ export default {
       }
       if(this.moveingColumn){
         this.moveing = true;
-         addClass(document.body, 'useSelect');
+        addClass(document.body, 'useSelect');
         this.$parent.moveProxyVisible = true;
         let dom = this.findObj(event,'TH').cloneNode(true);
         dom.width = column._width;
@@ -409,20 +398,6 @@ export default {
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
       }
-      /**
-       * 【TS:201907290049-财富业委会_占美强-【需求类型】缺陷【需求描述】目前列表查询，可以支持点击名字排】
-       * 【TS:201907290145-资管业委会（资管）_孔磊-【需求类型】需求【需求描述】表格2、点击列头时就可以进行排序】
-       * */
-      if(column.sortable) {
-        const type = column._sortType;
-        if (type === 'normal') {
-          this.handleSort(index, 'asc');
-        } else if (type === 'asc') {
-          this.handleSort(index, 'desc');
-        } else {
-          this.handleSort(index, 'normal');
-        }
-      }
     },
     mousemove(event,column,index){
       // if (!this.canDrag || !column ) return;
@@ -464,6 +439,32 @@ export default {
           this.moveingColumn = null;
         }
       }
+    },
+    mouseup(event, column, index) {
+      //拖拽表头排序不触发
+      if(this.isDrag(this.beginLocation.clientX, this.beginLocation.clientY, event.clientX, event.clientY)) {
+        return
+      }
+      /**
+       * 【TS:201907290049-财富业委会_占美强-【需求类型】缺陷【需求描述】目前列表查询，可以支持点击名字排】
+       * 【TS:201907290145-资管业委会（资管）_孔磊-【需求类型】需求【需求描述】表格2、点击列头时就可以进行排序】
+       * */
+      if(column.sortable) {
+        const type = column._sortType;
+        if (type === 'normal') {
+          this.handleSort(index, 'asc');
+        } else if (type === 'asc') {
+          this.handleSort(index, 'desc');
+        } else {
+          this.handleSort(index, 'normal');
+        }
+      }
+    },
+    isDrag(x1, y1, x2, y2) {
+      if(Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)) <= 1) {
+        return false;
+      }
+      return true;
     },
     mouseout() {
       if (this.$isServer) return;

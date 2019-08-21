@@ -2,7 +2,7 @@
   <div>
     <Button @on-click="testClick(true)">获取焦点</Button>
     <Button @on-click="testClick(false)">失去焦点</Button>
-    <h-date-picker v-model="model1" @on-blur="dateBlur" iconVisible :options="options5" @on-illegal-input="handleIllegalInput" clearOnIllegal @on-change="handleChange1" confirm showTwoPanel format="yyyy-MM-dd" :showFormat="true" style="width:180px" :disabled="changeable" ref="test"></h-date-picker>
+    <h-date-picker v-model="model1" @on-blur="dateBlur" @on-focus="dateFocus" :options="options5" @on-illegal-input="handleIllegalInput" clearOnIllegal @on-change="handleChange1" confirm showTwoPanel format="yyyy-MM-dd" :showFormat="true" style="width:180px" :disabled="changeable" ref="test"></h-date-picker>
     <span>{{formItem.date}}</span>
     <Button @click = "changedis">改变状态</Button>
     <h-row>
@@ -10,7 +10,7 @@
       <p>设置属性 type 为 date 或 daterange 分别显示选择单日和选择范围类型。<br>
         设置属性 placement 可以更改选择器出现的方向</p>
       <h-col span="12">
-        <h-date-picker v-model="model1"  format="yyyy-MM-dd" type="date" style="width: 200px" @on-clickout="s" :showFormat="true"></h-date-picker>{{model1}}
+        <h-date-picker v-model="model1"  format="yyyy-MM-dd" type="date"  :options="options4"   style="width: 200px" @on-clickout="s" :showFormat="true" showToday></h-date-picker>{{model1}}
       </h-col>
       <h-col span="12">
         {{model2}}
@@ -252,6 +252,9 @@
       handleIllegalInput() {
         this.$hMessage.warning('日期输入不合法');
       },
+      dateFocus() {
+        console.log('focus')
+      },
       dateBlur() {
         console.log('blur')
       },
@@ -298,7 +301,7 @@
     mounted(){
       this.model1='2018-3-6';
       // this.model2=['2018年3月9日','2018年3月19日'];
-    } 
+    }
   }
 </script>
 

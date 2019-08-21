@@ -26,6 +26,9 @@
             v-show="showPlaceholder && (!filterable&&!newSearchModel||showBottom)">{{ localePlaceholder }}</span>
       <span :class="[prefixCls + '-selected-value']"
             v-show="!showPlaceholder && !multiple && !(filterable && !showBottom)">{{ selectedSingle }}</span>
+      <!-- o45模式下失去焦点需要显示多列数据 -->
+      <span :class="[prefixCls + '-selected-value']"
+            v-show="showMutiLabel&&singleMutiLabel">{{ singleMutiLabel }}</span>
       <!--搜索框开启newSearchModel时渲染-->
           <input type="text"
              v-if="newSearchModel&&multiple"
@@ -43,7 +46,7 @@
              ref="input">
       <!-- 下拉输入框(远程搜索时渲染) -->
       <input type="text"
-             v-if="filterable && !showBottom &&!newSearchModel"
+             v-if="filterable && !showBottom &&!newSearchModel&&!(showMutiLabel&&singleMutiLabel)"
              v-model="query"
              :disabled="disabled"
              :readonly="!editable||readonly"
@@ -111,6 +114,10 @@
             <slot name="header">
             </slot>
           </div>
+          <div v-if="buttonToTop&&multiple" :class="[prefixCls + '-btnToTop']">
+            <Checkbox v-model="selectHead" @on-change="toggleSelect(!isSelectAll)">全选</Checkbox>
+            <Button size="small" :class="[prefixCls + '-btnToTop-invert']" @click="toggleSelect(false)">全不选</Button>
+          </div>
           <div v-if="!isBlock"
                v-show="(!notFound && !remote) || (remote && !loading && !notFound)"
                :class="[prefixCls + '-dropdown-list']"
@@ -138,7 +145,7 @@
           <slot name="footer">
           </slot>
         </div>
-        <div v-if="isCheckall&&multiple&&!notFoundShow"
+        <div v-if="isCheckall&&multiple&&!notFoundShow&&!buttonToTop"
              :class="checkAll">
           <Button size="small"
                   @click="toggleSelect(false)">全不选</Button>
@@ -380,8 +387,8 @@ export default {
       default:false,
     },
     showValue: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false
     },
     accuFilter:{
       type: Boolean,
@@ -411,11 +418,15 @@ export default {
     },
     tabindex: {
       type: [String, Number],
-      default: "-1",
+      default: 0,
       validator(value) {
         let num = parseInt(value);
         return num <= 32767 && num >= -1;
       }
+    },
+    buttonToTop: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -458,6 +469,8 @@ export default {
       // isCopy:false,
       // newSearchCheckAll:false,
       // newSearchUnCheckAll:false,
+      showMutiLabel:false,
+      singleMutiLabel:''
     }
   },
   computed: {
@@ -613,7 +626,7 @@ export default {
       return 'h-select-checkall'
     },
     selectTabindex() {
-      return this.disabled ? -1 : ((this.tabindex + "") !== "-1" ? this.tabindex : 0);
+      return this.disabled ? -1 : ((this.tabindex + "") !== "-1" ? (this.filterable ? -1 : this.tabindex) : 0);
     },
     notFoundShow() {
       let options = this.options
@@ -660,7 +673,9 @@ export default {
       this.$emit('on-scroll', num)
     },
     toggleSelect(val) {
+      console.log(val, this.isSelectAll)
       this.isSelectAll = !this.isSelectAll
+      this.selectHead = val
       if (this.isBlock) {
         let hybridValue = []
         let curValue = []
@@ -710,6 +725,16 @@ export default {
       }
     },
     showdrop(){
+      if(this.isSingleSelect && this.showMutiLabel){
+        if (this.disabled || !this.editable || this.readonly) {
+          return false
+        }
+        this.isInputFocus = true
+        this.showMutiLabel = false
+        this.$nextTick(()=>{
+          this.select()
+        })
+      }
       if(!this.isSingleSelect){
         this.toggleMenu();
       }
@@ -733,7 +758,7 @@ export default {
         return false
       }
       this.visible = !this.visible
-      this.isInputFocus = false
+      // this.isInputFocus = false
       if(this.newSearchModel){
         this.isInputFocus = true
       }
@@ -834,6 +859,9 @@ export default {
             })
             this.selectedResult=multipleAry.join(',');
           }
+        }
+        if(this.remote){
+          this.$refs.dropdown.setWidthAdaption();
         }
       }
     },
@@ -1066,8 +1094,11 @@ export default {
           this.dispatch('FormItem', 'on-form-blur', this.selectedSingle)
         }
         this.isInputFocus = false
-        if(this.isSingleSelect&&this.model==''){
-          this.query=''
+        if(this.isSingleSelect&&this.model==''&&this.query!=''){
+          if(this.options.length>0){
+            this.model = this.options[0].value
+            this.isQuerySelect = false
+          }
         }
       }
     },
@@ -1096,32 +1127,6 @@ export default {
         return false
       }
       if (this.visible) {
-        // if(window.isO45){
-          // right
-          // if (keyCode === 39) {
-          //   e.preventDefault();
-          //   this.navigateOptions('next');
-          // }
-          // // left
-          // if (keyCode === 37) {
-          //   e.preventDefault();
-          //   this.navigateOptions('prev');
-          // }
-          // if(!this.multiple && (keyCode === 39||keyCode === 37)){
-          //   this.model = this.focusValue
-          // }
-          // if(this.multiple&&keyCode === 32){
-          //   let index = this.focusIndex - 1
-          //   if (index < 0) return false
-          //   if(!this.focusValue) {
-          //     this.focusValue = this.availableOptions[this.focusIndex - 1].value
-          //   }
-          //   if(this.availableOptions[this.focusIndex - 1].disabled) return
-          //   this.selectBlockMultiple(this.focusValue)
-          // }
-          // return false;
-        // }
-        // next
         if (keyCode === 40) {
           e.preventDefault()
           this.navigateOptions('next')
@@ -1243,6 +1248,10 @@ export default {
     handleFocus(e) {
       e.target.selectionStart = 0
       e.target.selectionEnd = this.query.length
+      if(this.isSingleSelect){
+        this.showMutiLabel = false
+      }
+      this.$emit('on-focus')
     },
     handleBlur() {
       this.$emit('on-blur')
@@ -1257,6 +1266,7 @@ export default {
         this.selectedResult=modelstr;
       }
       this.isInputFocus = false
+      this.$emit('on-blur')
     },
     resetInputState(e) {
       this.inputLength = this.$refs.input.value.length * 12 + 56
@@ -1524,6 +1534,9 @@ export default {
     },
     focus() {
       if (this.disabled || this.readonly) return
+      if(this.isSingleSelect){
+        this.showMutiLabel = false
+      }
       this.$nextTick(() => {
         this.isInputFocus = true
         if(!this.isSingleSelect){
@@ -1551,8 +1564,13 @@ export default {
       } else {
         this.$refs.reference.blur()
       }
-      if(this.isSingleSelect&&this.model==''){
-        this.query=''
+      if(this.isSingleSelect){
+        if(this.model==''&&this.query!=''){
+          if(this.options.length>0){
+            this.model = this.options[0].value
+            this.isQuerySelect = false
+          }
+        }
       }
     },
     select() {
@@ -1581,6 +1599,7 @@ export default {
       }
      if(!this.isSingleSelect||str=='click'){
         this.hideMenu()
+        this.isInputFocus = false
       }
     },
     selectBlockMultiple(value,changeitem) {
@@ -1638,7 +1657,24 @@ export default {
       for (let i = 0; i < doms.length; i++) {
         if (doms[i].style.display !== 'none') return doms[i]
       }
-    }
+    },
+    setSingleSelect(){
+      if(this.model==''){
+        this.singleMutiLabel=''
+      }else{
+        let curlabel = ''
+        this.findChild(child=>{
+          child.cloneData.forEach((col,i)=>{
+            if(col.value==this.model&&child.showCol.length>0){
+              curlabel = col.label+' '+ col[child.showCol[0]]
+            }
+          })
+        })
+        this.singleMutiLabel = curlabel
+      }
+      this.showMutiLabel = true
+
+    },
   },
   mounted() {
     this.isBlock = this.block ? true : false
@@ -1810,6 +1846,8 @@ export default {
             // if(!window.isO45){
             if(!this.isSingleSelect){
               this.broadcastQuery('')
+            }else{
+              this.broadcast('Block', 'on-query-change', '',true)
             }
           }, 300)
         }
@@ -1821,9 +1859,9 @@ export default {
       this.$emit('on-drop-change', val)
     },
     query(val) {
-      if(this.isSingleSelect&&this.isInputFocus){
-        if (!this.visible && val) this.visible = true;
-      }
+      // if(this.isSingleSelect&&this.isInputFocus){
+      //   if (!this.visible && val) this.visible = true;
+      // }
       if (this.remote && this.remoteMethod) {
         if (!this.selectToChangeQuery) {
           // 解决当通过表单方法firstNodeFocused定位到SimpleSelect时只能输入但不展示下拉选项的问题
@@ -1869,6 +1907,9 @@ export default {
         if (this.query !== '') this.selectToChangeQuery = true
       }
       this.viewValue = val
+      if(this.isSingleSelect&&!this.isInputFocus){
+        this.setSingleSelect()
+      }
     },
     // options(val) {
     //   console.log('options', val)
@@ -1906,7 +1947,12 @@ export default {
           this.showTotal = false
         }
       }
-      if(this.newSearchModel&&val){
+      if(this.isSingleSelect){
+        if(!val){
+          this.setSingleSelect()
+        }
+      }
+      if((this.newSearchModel||this.isSingleSelect)&&val){
         this.$emit("on-input-focus");
       }
     },

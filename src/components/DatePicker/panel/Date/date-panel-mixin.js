@@ -50,7 +50,11 @@ export default {
         showTwoPanel:Boolean,
         longValue:{
             type: [Date, String, Array]
-       }
+       },
+       showToday: {
+        type: Boolean,
+        default: false
+    },
     },
     computed: {
         isTime(){

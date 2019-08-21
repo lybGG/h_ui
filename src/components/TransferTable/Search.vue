@@ -42,6 +42,9 @@
             if (this.currentQuery === '') return;
             this.currentQuery = '';
             this.$emit('on-query-clear');
+          },
+          clearSearch(){
+            this.currentQuery=""
           }
         }
     };

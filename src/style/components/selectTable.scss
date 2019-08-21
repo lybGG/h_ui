@@ -398,6 +398,14 @@ $select-group-prefix-cls:  "#{$css-prefix}selectTable-group";
         line-height: $input-height-base - 2px;
         padding-left: 8px;
     }
+
+  &-btnToTop {
+    padding: 7px 14px;
+    &-invert {
+      float: right;
+      margin-right: 12px;
+    }
+  }
 }
 .#{$selectTable-prefix-cls}-checkHead{
     input{

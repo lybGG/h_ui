@@ -55,6 +55,7 @@
             filterMethod: this.filterMethod,
             filterPlaceholder: this.localeFilterPlaceholder,
             noEdit:this.noEdit,
+            isHide:this.hidelTable,
           },
           on: {
             // 'on-checked-keys-change': this.handleLeftCheckedKeysChange
@@ -66,7 +67,8 @@
             prefixCls: this.prefixCls,
             operations: this.operations,
             leftActive: this.leftValidKeysCount > 0,
-            rightActive: this.rightValidKeysCount > 0
+            rightActive: this.rightValidKeysCount > 0,
+            isHide:this.hideOperations
           }
         }),
 
@@ -93,6 +95,7 @@
             filterMethod: this.filterMethod,
             filterPlaceholder: this.localeFilterPlaceholder,
             noEdit:this.noEdit,
+            isHide:this.hiderTable,
           },
           on: {
             // 'on-checked-keys-change': this.handleRightCheckedKeysChange
@@ -196,7 +199,19 @@
         default (keys, dire, isAll) {
           return true;
         }
-      }
+      },
+      hidelTable:{
+        type: Boolean,
+        default: false,
+      },
+      hiderTable:{
+        type: Boolean,
+        default: false,
+      },
+      hideOperations:{
+        type: Boolean,
+        default: false,
+      }     
     },
     data () {
       return {
@@ -328,6 +343,9 @@
           }
           return copied;
         });
+      },
+      clearSearch(dir='left'){//清空搜索框
+        this.$refs[dir].clearSearch()
       }
     },
     watch: {

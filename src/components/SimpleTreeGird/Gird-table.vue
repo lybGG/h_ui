@@ -8,7 +8,7 @@
           :styleObject="tableStyle"
           :columns="cloneColumns"
           :columns-width="columnsWidth"
-          :dataLenght="data.length"
+          :dataLength="data.length"
           :headSelection ="headSelection"
           :canDrag="canDrag"
           :canMove="canMove"
@@ -47,7 +47,7 @@
             :styleObject="tableStyle"
             :columns="leftFixedColumns"
             :columns-width="columnsWidth"
-            :dataLenght="data.length"
+            :dataLength="data.length"
             :headSelection ="headSelection"
             :canDrag="canDrag"
           ></gird-head>
@@ -218,6 +218,12 @@ export default {
       type:Boolean,
       default:false,
     },
+    rowClassName: {
+      type: Function,
+      default () {
+        return '';
+      }
+    },
   },
   data () {
     return {
@@ -371,6 +377,9 @@ export default {
     },
   },
   methods: {
+    rowClsName (id,row) {
+      return this.rowClassName(row,id);
+    },
     handleMouseIn (id) {
       if (this.disabledHover) return;
       let inx = this.indexAndId[id]
@@ -538,6 +547,7 @@ export default {
           this.$emit('on-current-change', status?row:null);
         }
         if(this.selectRoot){
+          debugger
           if(row._parentId!=undefined){
             let item = null
             for(var i=0;i<this.data.length;i++){
@@ -806,6 +816,7 @@ export default {
   watch: {
     data: {
       handler (val) {
+        this.selection = {}
         this.handleResize();
         if(this.rebuildData.length === 0 || val.length === 0) {
           if(this.$refs.body) {

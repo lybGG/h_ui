@@ -54,7 +54,7 @@ $select-group-prefix-cls:  "#{$css-prefix}select-group";
             padding-left: $select-tag-padding-left;
             margin-left:$select-tag-margin-left;
             background: $select-tag-background !important;
-            border: 1px solid $border-color-split !important;  
+            border: 1px solid $border-color-split !important;
             &>.#{$css-prefix}icon {
               position: absolute;
               right: 0;
@@ -297,6 +297,14 @@ $select-group-prefix-cls:  "#{$css-prefix}select-group";
     &-right{
         text-align:right;
     }
+
+  &-btnToTop {
+    padding: 7px 12px;
+    &-invert {
+      float: right;
+      margin-right: 12px;
+    }
+  }
 }
 
 @include select-item($select-prefix-cls, $select-item-prefix-cls);
@@ -314,7 +322,7 @@ $select-group-prefix-cls:  "#{$css-prefix}select-group";
     .#{$select-item-prefix-cls}-selected.#{$select-item-prefix-cls}-focus {
         color: shade($selected-color, 10%);
         background: $select-multiple-selected-item-focus-background;
-    }   
+    }
 }
 .#{$select-prefix-cls}-hideMult .#{$select-item-prefix-cls} {
     padding-right: 12px;

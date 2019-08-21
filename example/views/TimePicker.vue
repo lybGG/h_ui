@@ -1,7 +1,7 @@
 <template>
   <div>
     <h-row>
-      <h-time-picker v-model="val" format="HH’mm’ss" type="timerange" placement="bottom-end" placeholder="选择时间" size="large" :steps= "[2, 15,10]"  style="width:200px"></h-time-picker>
+      <h-time-picker v-model="val" format="HH’mm’ss" type="timerange" placement="bottom-end" placeholder="选择时间" size="large" :steps= "[2, 15,10]" @on-focus="focusEvent" @on-blur="blurEvent" style="width:200px"></h-time-picker>
       {{val}}
       <h2>基本用法</h2>
       <p>设置属性 type 为 time 或 timerange 分别显示选择单个时间和选择范围时间类型<br>
@@ -197,6 +197,12 @@
       }
     },
     methods:{
+      focusEvent() {
+        console.log('fo')
+      },
+      blurEvent() {
+        console.log('bl')
+      },
       handleClick () {
         this.open = !this.open;
       },
@@ -209,7 +215,7 @@
       handleOk () {
         this.open = false;
       }
-    } 
+    }
   }
 </script>
 

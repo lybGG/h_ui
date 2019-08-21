@@ -1,13 +1,17 @@
 <template>
   <div>
     <h-row>
-      <h-col span='6'><h2>基本用法</h2><h-tree :data="test" ref="test"></h-tree></h-col>
-      <h-button @on-click="ok">赋值</h-button>
-      <h-button @on-click="cancle">取消</h-button>
-      <h-button @on-click="select">选择</h-button>
-      <h-button @on-click="select(false)">取消选中</h-button>
+      <h-col span='6'>
+        <h2>基本用法</h2>
+        <h-tree :data="test" ref="test" @on-right-click="rightclick" @on-toggle-expand="checkChnage"></h-tree>
+        <h-button @on-click="ok">赋值</h-button>
+        <h-button @on-click="cancle">取消</h-button>
+        <h-button @on-click="select">选择</h-button>
+        <h-button @on-click="select(false)">取消选中</h-button>
+      </h-col>
+
       <h-col span='6'><h2>显示勾选框</h2><h-tree :data="data2" checkStrictly isBoxRight selectToCheck multiple show-checkbox @on-check-change="checkChnage" @on-toggle-expand="checkChnage" @on-mouseover="checkChnage"></h-tree></h-col>
-      <h-col span='6'><h2>异步加载</h2><h-tree :data="data3" :load-data="loadData" show-checkbox></h-tree> </h-col>
+      <h-col span='6'><h2>异步加载</h2><h-tree :data="data3" :load-data="loadData" show-checkbox  @on-right-click="rightclick"></h-tree> </h-col>
       <h-col span='6'><h2>默认展开、选中、勾选和禁用</h2><h-tree :data="data4" show-checkbox multiple></h-tree> </h-col>
     </h-row>
     <h-row>
@@ -51,18 +55,18 @@
   </div>
 </template>
 <script>
-import {deepCopy} from '../../src/util/tools.js'
-let bigObj = [];
-let curdata=[]
-for(var i=0;i<10;i++){
-  var obj = {
-    title: 'children',
-    loading: false,
-    children: []
-  };
-  curdata.push(obj)
-}
-bigObj = curdata;
+  import {deepCopy} from '../../src/util/tools.js'
+  let bigObj = [];
+  let curdata=[]
+  for(var i=0;i<10;i++){
+    var obj = {
+      title: 'children',
+      loading: false,
+      children: []
+    };
+    curdata.push(obj)
+  }
+  bigObj = curdata;
   export default {
     data () {
       return {
@@ -127,26 +131,26 @@ bigObj = curdata;
           }
         ],
         baseData2: [{
+          expand: true,
+          title: 'parent 1',
+          children: [{
+            title: 'parent 1-0',
             expand: true,
-            title: 'parent 1',
+            disabled: true,
             children: [{
-              title: 'parent 1-0',
-              expand: true,
-              disabled: true,
-              children: [{
-                title: 'leaf',
-                disableCheckbox: true
-              }, {
-                title: 'leaf',
-              }]
+              title: 'leaf',
+              disableCheckbox: true
             }, {
-              title: 'parent 1-1',
-              expand: true,
-              checked: true,
-              children: [{
-                title: '<span style="color: red">leaf</span>',
-              }]
+              title: 'leaf',
             }]
+          }, {
+            title: 'parent 1-1',
+            expand: true,
+            checked: true,
+            children: [{
+              title: '<span style="color: red">leaf</span>',
+            }]
+          }]
         }],
         baseData3: [
           {
@@ -188,16 +192,16 @@ bigObj = curdata;
                 title: 'parent 1-1',
                 id: '2',
                 expand: true,
-                disabled:true,
+//                disabled:true,
                 children: [
-                    {
-                        title: 'leaf 1-1-1',
-                        id: '3',
-                    },
-                    {
-                        title: 'leaf 1-1-2',
-                        id: '4',
-                    }
+                  {
+                    title: 'leaf 1-1-1',
+                    id: '3',
+                  },
+                  {
+                    title: 'leaf 1-1-2',
+                    id: '4',
+                  }
                 ]
               },
               {
@@ -205,14 +209,14 @@ bigObj = curdata;
                 id: '5',
                 expand: true,
                 children: [
-                    {
-                        title: 'leaf 1-2-1',
-                        id: '5',
-                    },
-                    {
-                        title: 'leaf 1-2-1',
-                        id: '6',
-                    }
+                  {
+                    title: 'leaf 1-2-1',
+                    id: '5',
+                  },
+                  {
+                    title: 'leaf 1-2-1',
+                    id: '6',
+                  }
                 ]
               }
             ]
@@ -278,24 +282,24 @@ bigObj = curdata;
                 title: 'parent 1-1',
                 expand: 'false',
                 children: [
-                    {
-                        title: 'leaf 1-1-1'
-                    },
-                    {
-                        title: 'leaf 1-1-2'
-                    }
+                  {
+                    title: 'leaf 1-1-1'
+                  },
+                  {
+                    title: 'leaf 1-1-2'
+                  }
                 ]
               },
               {
                 title: 'parent 1-2',
                 expand: true,
                 children: [
-                    {
-                        title: 'leaf 1-2-1'
-                    },
-                    {
-                        title: 'leaf 1-2-1'
-                    }
+                  {
+                    title: 'leaf 1-2-1'
+                  },
+                  {
+                    title: 'leaf 1-2-1'
+                  }
                 ]
               }
             ]
@@ -409,42 +413,42 @@ bigObj = curdata;
             expand: true,
             render: (h, { root, node, data }) => {
               return h('span', {
-                  style: {
-                      display: 'inline-block',
-                      width: '100%'
-                  }
+                style: {
+                  display: 'inline-block',
+                  width: '100%'
+                }
               }, [
-                  h('span', [
-                    h('h-icon', {
-                        props: {
-                          name: 'android-folder-open'
-                        },
-                        style: {
-                          marginRight: '8px'
-                        }
-                    }),
-                    h('span', data.title)
-                  ]),
-                  h('span', {
+                h('span', [
+                  h('h-icon', {
+                    props: {
+                      name: 'android-folder-open'
+                    },
                     style: {
-                        display: 'inline-block',
-                        float: 'right',
-                        marginRight: '32px'
+                      marginRight: '8px'
                     }
-                  }, [
-                    h('h-button', {
-                      props: Object.assign({}, this.buttonProps, {
-                          icon: 'plus',
-                          type: 'primary'
-                      }),
-                      style: {
-                          width: '52px'
-                      },
-                      on: {
-                          click: () => { this.append(data) }
-                      }
-                    })
-                  ])
+                  }),
+                  h('span', data.title)
+                ]),
+                h('span', {
+                  style: {
+                    display: 'inline-block',
+                    float: 'right',
+                    marginRight: '32px'
+                  }
+                }, [
+                  h('h-button', {
+                    props: Object.assign({}, this.buttonProps, {
+                      icon: 'plus',
+                      type: 'primary'
+                    }),
+                    style: {
+                      width: '52px'
+                    },
+                    on: {
+                      click: () => { this.append(data) }
+                    }
+                  })
+                ])
               ]);
             },
             children: [
@@ -453,12 +457,12 @@ bigObj = curdata;
                 expand: true,
                 children: [
                   {
-                      title: 'leaf 1-1-1',
-                      expand: true
+                    title: 'leaf 1-1-1',
+                    expand: true
                   },
                   {
-                      title: 'leaf 1-1-2',
-                      expand: true
+                    title: 'leaf 1-1-2',
+                    expand: true
                   }
                 ]
               },
@@ -467,12 +471,12 @@ bigObj = curdata;
                 expand: true,
                 children: [
                   {
-                      title: 'leaf 1-2-1',
-                      expand: true
+                    title: 'leaf 1-2-1',
+                    expand: true
                   },
                   {
-                      title: 'leaf 1-2-1',
-                      expand: true
+                    title: 'leaf 1-2-1',
+                    expand: true
                   }
                 ]
               }
@@ -488,6 +492,9 @@ bigObj = curdata;
       }
     },
     methods: {
+      rightclick(d,e) {
+        console.log(d,e)
+      },
       changeFocus(num){
         let queryEl = this.$refs.filter.$el.querySelectorAll('.h-tree-title-filterable');
         let allIndex = queryEl.length
@@ -520,65 +527,65 @@ bigObj = curdata;
         }, 1000);
       },
       renderContent (h, { root, node, data }) {
-          return h('span', {
+        return h('span', {
+          style: {
+            display: 'inline-block',
+            width: '100%'
+          }
+        }, [
+          h('span', [
+            h('h-icon', {
+              props: {
+                name: 'ios-paper-outline'
+              },
               style: {
-                  display: 'inline-block',
-                  width: '100%'
+                marginRight: '8px'
               }
+            }),
+            h('span', data.title)
+          ]),
+          h('span', {
+            style: {
+              display: 'inline-block',
+              float: 'right',
+              marginRight: '32px'
+            }
           }, [
-              h('span', [
-                  h('h-icon', {
-                      props: {
-                        name: 'ios-paper-outline'
-                      },
-                      style: {
-                        marginRight: '8px'
-                      }
-                  }),
-                  h('span', data.title)
-              ]),
-              h('span', {
-                  style: {
-                      display: 'inline-block',
-                      float: 'right',
-                      marginRight: '32px'
-                  }
-              }, [
-                  h('h-button', {
-                      props: Object.assign({}, this.buttonProps, {
-                          icon: 'plus-round'
-                      }),
-                      style: {
-                          marginRight: '8px'
-                      },
-                      on: {
-                          click: () => { this.append(data) }
-                      }
-                  }),
-                  h('h-button', {
-                      props: Object.assign({}, this.buttonProps, {
-                          icon: 'minus-round'
-                      }),
-                      on: {
-                          click: () => { this.remove(root, node, data) }
-                      }
-                  })
-              ])
-          ]);
+            h('h-button', {
+              props: Object.assign({}, this.buttonProps, {
+                icon: 'plus-round'
+              }),
+              style: {
+                marginRight: '8px'
+              },
+              on: {
+                click: () => { this.append(data) }
+              }
+            }),
+            h('h-button', {
+              props: Object.assign({}, this.buttonProps, {
+                icon: 'minus-round'
+              }),
+              on: {
+                click: () => { this.remove(root, node, data) }
+              }
+            })
+          ])
+        ]);
       },
       append (data) {
-          const children = data.children || [];
-          children.push({
-              title: 'appended node',
-              expand: true
-          });
-          this.$set(data, 'children', children);
+        const children = data.children || [];
+        children.push({
+          title: 'appended node',
+          expand: true
+        });
+        this.$set(data, 'children', children);
       },
       remove (root, node, data) {
-          const parentKey = root.find(el => el === node).parent;
-          const parent = root.find(el => el.nodeKey === parentKey).node;
-          const index = parent.children.indexOf(data);
-          parent.children.splice(index, 1);
+        const parentKey = root.find(el => el === node).parent;
+        const parent = root.find(el => el.nodeKey === parentKey).node;
+        const index = parent.children.indexOf(data);
+        parent.children.splice(index, 1);
       },
       handleSelectChange (data) {
         // console.log(data);

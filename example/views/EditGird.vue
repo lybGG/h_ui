@@ -6,25 +6,25 @@
     <Button @click="delDate">删除数据</Button>
     <!-- <Button @click="changeMsg">显示</Button> -->
     <!-- <h-msg-box v-model = "showMsgBox" width="1000"> -->
-      <h-edit-gird ref="table" border height="200" 
+      <h-edit-gird ref="table" border height="600"
         :showEditInput=true
-        :columns="columns1" 
-        :data="data2" 
-        :disabled-hover="true" 
-        :highlight-row="true" 
+        :columns="columns1"
+        :data="data2"
+        :disabled-hover="true"
+        :highlight-row="true"
         @on-current-change="click1"
-        stripe 
-        :loading="loading" 
-        @on-expand="expand" 
-        :option="options1" 
-        :treeOption="treeOption" 
+        stripe
+        :loading="loading"
+        @on-expand="expand"
+        :option="options1"
+        :treeOption="treeOption"
         @on-sort-change="sortChange"
         @on-editselect-change="selectchange"
         @on-editinput-change="selectchange"
-        @on-editinput-blur="selectchange" 
-        @on-editarea-change="selectchange" 
-        @on-editarea-blur="selectchange" 
-        @on-money-blur="selectchange" 
+        @on-editinput-blur="selectchange"
+        @on-editarea-change="selectchange"
+        @on-editarea-blur="selectchange"
+        @on-money-blur="selectchange"
         @on-money-change="selectchange"
         @on-editdate-change="selectchange">
         <p slot='loading'>我是自定义loading</p>
@@ -433,16 +433,15 @@ export default {
           steps: [2,2,2],
           rule:{ required: true, message: '请选择时间', trigger: 'blur,change' }
         },
-        // {
-        //   type: 'selectTree',
-        //   title: '下拉树',
-        //   // width: 200,
-        //   key: 'tree',
-        //   fixed:'right',
-        //   showCheckbox: false,
-        //   checkStrictly: false,
-        //   rule:{ required: true, message: '请选择子节点', trigger: 'blur,change' }
-        // }
+         {
+           type: 'selectTree',
+           title: '下拉树',
+           // width: 200,
+           key: 'tree',
+           showCheckbox: false,
+           checkStrictly: false,
+           rule:{ required: true, message: '请选择子节点', trigger: 'blur,change' }
+         }
       ],
       columns4: [
       {
@@ -546,7 +545,7 @@ export default {
       console.log(inx);
     },
     getData(){
-      console.log(this.$refs.editGird.cloneData); 
+      console.log(this.$refs.editGird.cloneData);
     },
     addDate(){
       // tData = this.data1.push({
@@ -600,7 +599,7 @@ export default {
       } else {
           this.options1[7] = [];
       }
-    }, 
+    },
     selectchange(val,i,j){
       console.log(val);
       console.log(i);
@@ -609,7 +608,7 @@ export default {
     getChangeData(){
       console.log(this.$refs.table.getChangeData())
       console.log(this.$refs.table1.getChangeData())
-    } 
+    }
   },
   mounted(){
     // this.data1=tData

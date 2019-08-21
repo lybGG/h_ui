@@ -85,7 +85,11 @@ export default {
     // 显示多列的表头，表头高度默认 30，宽度默认 100
     showHeader: {
       type: Array,
-      default: () => []
+      default: () => [],
+    },
+    colWidth:{
+      type: Array,
+      default: () => [],
     }
     // disabled: {
     //   type: Boolean,
@@ -175,8 +179,7 @@ export default {
     blur() {
       this.isFocus = false
     },
-    queryChange(val) {
-      console.log(val)
+    queryChange(val,states) {
       const parsedQuery = val.replace(
         /(\^|\(|\)|\[|\]|\$|\*|\+|\.|\?|\\|\{|\}|\|)/g,
         '\\$1'
@@ -203,7 +206,7 @@ export default {
               status = false
             }
             if(this.$parent.$parent.accuFilter){         
-              if ((parsedQuery===targetLabel)&&!selected) {
+              if ((parsedQuery===targetLabel)&&!selected&&!states) {
                 if(this.$parent.$parent.isSingleSelect){
                   isEffective = true
                   this.$parent.$parent.selectBlockSingle(targetValue,true)
@@ -213,7 +216,7 @@ export default {
               }
             }
           })
-          if(this.$parent.$parent.isSingleSelect&&!isEffective){
+          if(this.$parent.$parent.isSingleSelect&&!isEffective&&!states){
             this.$parent.$parent.selectBlockSingle('',true)
           }
           this.dispatch('SimpleSelect', 'on-options-visible-change', { data: this.cloneData })
@@ -337,7 +340,8 @@ export default {
     } else if (this.showCol.length) {
       this.styleArr = []
       for(let i = 0; i < this.showCol.length + 1; i++) {
-        this.styleArr.push(this.calcStyle(''))
+        let str = this.colWidth[i]?this.colWidth[i]:''
+        this.styleArr.push(this.calcStyle(str))
       }
     }
   },
@@ -352,8 +356,8 @@ export default {
     this.$on('on-select-close', () => {
       this.isFocus = false
     })
-    this.$on('on-query-change', val => {
-      this.queryChange(val)
+    this.$on('on-query-change', (val,states) => {
+      this.queryChange(val,states)
     })
     this.$on('on-select-top', (status) => {
       this.selectedTop(status)

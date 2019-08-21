@@ -31,7 +31,7 @@
     <h-table-option border :columns="columns1" :data="data1" @on-select-all="allSelect" @on-select="select" :rowSelect="true" @on-selection-change="selsetChange"></h-table-option>
   </h-select-table>
   <h2>左列多列搜索</h2>
-  <h-select-table v-model="model4" :filterable="true" :matchCol="matchCol"  matchWay="left" placement="top-start">
+  <h-select-table v-model="model4" :filterable="true" :matchCol="matchCol"  matchWay="left" placement="top-start" @on-focus="focusEvent" @on-blur="blurEvent">
     <h-table-option border :columns="columns1" :data="data1" @on-select-all="allSelect" @on-select="select" @on-selection-change="selsetChange" :highlightRow="true"></h-table-option>
   </h-select-table>
   <h2>全匹配多列搜索</h2>
@@ -183,6 +183,12 @@ export default {
     }
   },
   methods: {
+    focusEvent() {
+      console.log('获取焦点')
+    },
+    blurEvent() {
+      console.log('失去焦点')
+    },
     testClick(val){
       if (val) {
         this.$refs.test.focus();

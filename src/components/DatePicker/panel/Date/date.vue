@@ -64,10 +64,12 @@
                 :show-time="showTime"
                 :is-time="isTime"
                 :show-long="showLong"
+                :showToday="showToday"
                 @on-pick-toggle-time="handleToggleTime"
                 @on-pick-clear="handlePickClear"
                 @on-pick-success="handlePickSuccess"
                 @on-pick-long="handleLongDate"
+                @on-pick-today="handleToday"
             ></Confirm>
         </div>
     </div>
@@ -190,6 +192,9 @@
             },
             handleLongDate(){
                 this.$emit('on-pick-long');
+            },
+            handleToday (){
+                this.$emit('on-pick-today');
             }
         },
     };

@@ -8,11 +8,12 @@
       <p>单选时，value只接受字符串和数字类型，多选时，value只接受数组类型</p>
       <!-- <h-select ref="test" placement="bottom-start" :dropWidth="400" @on-blur="blurH"></h-select> -->
        <!-- placement="top-start" -->
-      <Button @on-click="setNull">赋不存在值</Button>{{model34}}
+      <Button @on-click="setNull">赋不存在值</Button>
+      {{model34}}
       <h-select v-model="model34"
                 zeroToNull
                 filterable
-                style="width:80px"
+                style="width:300px"
                 @on-drop-change="change"
                 @on-change="change"
                 @on-scroll="scroll"
@@ -22,12 +23,6 @@
                 @on-focus="fo"
                 @on-blur="bl"
                 >
-        <div slot="header">
-          <h-button @click="selectAll(true)">全选</h-button>
-          <h-button @click="selectAll(false)">全不选</h-button>
-          <h-button @click="selectTop(true)">已选置顶</h-button>
-          <h-button @click="selectTop(false)">已选不置顶</h-button>
-        </div>
         <h-option value="index">
           <a href=http://www.google.com/>link1214121111111111111111111111</a>
         </h-option>
@@ -56,26 +51,26 @@
       </h-select> -->
       <!-- {{model44}} -->
        <h-select v-model="model44"
-                isBackClear
-                multiple
-                style="width:320px"
-                isCheckall
+                 isBackClear
+                 style="width:300px"
+                 multiple
+                 filterable
+                 buttonToTop
                 @on-change="change"
                 @on-scroll="scroll"
+                 @on-focus="focusH"
+                 @on-blur="blurH"
                 :isComputed="isComputed"
                 noMoreText="哈哈哈哈"
-                :specialIndex="true"
                 showTitle
                 multClearable
                 ref  = "iconclick"
                 algin="center">
-        <h-option :value="-1"
-                  key="-1">-1 所有link1214121111111111111111111111111111111111111111</h-option>
         <h-option v-for="item in cityList"
-                  multiple
-                  :value="Number(item.value)"
-                  :key="item.value"
-                  :disabled="item.value==2">{{ item.label }}</h-option>
+                  :value="item.value"
+                  :disabled="item.value==2">
+          {{ item.label }}
+        </h-option>
       </h-select>
       {{model44}}
       <h-button @click="iconClick">清空icon</h-button>
@@ -243,10 +238,6 @@
         </h-select>
         {{model9}}
         <h-select v-model="model9" width="260" multiple>
-          <div slot="header">
-            <h-button @click="selectAll(true)">全选</h-button>
-            <h-button @click="selectAll(false)">反选</h-button>
-          </div>
           <h-option v-for="(item, index) in uList"
                     :value="item.id"
                     :key="item.id">{{ item.name }}</h-option>
@@ -260,7 +251,8 @@
         <h-select v-model="model10"
                   placement="top"
                   width="200"
-                  filterable ref="test">
+                  filterable
+                  ref="test">
           <h-option :value="3">{{'<你>'}}</h-option>
           <h-option v-for="(item, index) in uList"
                     :value="item.id"
@@ -606,7 +598,7 @@ export default {
       isComputed: false,
       cityList: [],
       model34: '',
-      model44: [1,2],
+      model44: [],
       mode224: '',
       model1: ['beijing'],
       model2: '',
@@ -828,11 +820,14 @@ export default {
         }, 200)
       }
     },
+    focusH() {
+      console.log('获取焦点')
+    },
     blurH(){
       console.log('失去焦点了')
     },
     change(e) {
-//      console.log(e)
+      console.log(e)
     },
     clear() {
       this.d = []

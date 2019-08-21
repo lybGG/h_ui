@@ -9,9 +9,11 @@
     <h-button @on-click="selectData(false)">不选择某行</h-button>
     <h-button @on-click="checkedData(true)">多选选择某行</h-button>
     <h-button @on-click="checkedData(false)">多选不选择某行</h-button>
+    <h-button @on-click="selectAll(true)">全选</h-button>
+    <h-button @on-click="selectAll(false)">非全选</h-button>
     <!-- isCheckbox checkStrictly -->
     <!-- selectRoot -->
-    <h-simple-tree-gird ref="treeGird" headSelection canDrag canMove :columns="columns1" no-data-text="123" isCheckbox :data="treedata" :height="400" @on-row-dblclick="selectChange" @on-expand="expand" @on-drag="expand" >
+    <h-simple-tree-gird ref="treeGird" :rowClassName="rowClassName" headSelection  canDrag canMove :columns="columns1" no-data-text="123" isCheckbox :data="treedata" :height="400" @on-row-dblclick="selectChange" @on-expand="expand" @on-drag="expand" >
       <span slot="loading">1244</span>
     </h-simple-tree-gird>
   </div>
@@ -50,21 +52,21 @@ for(var i=50;i<100;i++){
   }
   bigData.push(obj)
 }
-for(var i=100;i<200;i++){
-  let obj =  {
-    id: i,
-    name: '王小明'+i,
-    age: 18,
-    address: '北京市朝阳区芍药居',
-    money: '120.00',
-    cardId: '6223 ',
-    city: '北京',
-    dating:'2018',
-    timing:'16',
-    _parentId:Math.ceil(Math.random()*100),
-  }
-  bigData.push(obj)
-}
+// for(var i=100;i<200;i++){
+//   let obj =  {
+//     id: i,
+//     name: '王小明'+i,
+//     age: 18,
+//     address: '北京市朝阳区芍药居',
+//     money: '120.00',
+//     cardId: '6223 ',
+//     city: '北京',
+//     dating:'2018',
+//     timing:'16',
+//     _parentId:Math.ceil(Math.random()*100),
+//   }
+//   bigData.push(obj)
+// }
 let bigData1 = [{
   id:0,
   expand:true,
@@ -222,6 +224,15 @@ export default {
       this.$refs.treeGird.checkedRow(0,status);
       console.log(this.$refs.treeGird.getSelection())
     },
+    rowClassName(row,id){
+      if (id === 1||id===50) {
+        return 'demo-table-info-row';
+      }
+      return '';
+    },
+    selectAll(status){
+      this.$refs.treeGird.selectAll(status)
+    },
   },
   mounted() {
     let attributes = {
@@ -236,3 +247,10 @@ export default {
   }
 }
 </script>
+<style>
+.demo-table-info-row td{
+  background-color: #2db7f5 !important;
+  color: #fff;
+}
+</style>
+

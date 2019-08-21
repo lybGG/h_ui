@@ -212,6 +212,7 @@ export default {
         let status = this.getStatus();
         this.isShowError = this.errorTip&&status;
         this.$emit('input',[this.minValue,this.maxValue]);
+        this.$emit('on-blur')
         let curValue = [];
         if(this.minValue!=''&&this.maxValue!=""){
           curValue = [this.minValue,this.maxValue];

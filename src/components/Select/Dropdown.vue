@@ -59,25 +59,23 @@ export default {
 			this.$emit('click', event);
 		},
 		setWidthAdaption(){
-			let content = this.$refs.selectdrop
-			if(this.$parent.$options.name ==='SimpleSelect'){
-				content = content.querySelectorAll('.h-selectTable-dropdown-list')[0].children[0]
-				// if(this.$parent.showBottom || this.$parent.hideMult){
-				// 	content = content.children[1].children[0]
-				// }else{
-				// 	content=content.children[0].children[0]
+		    setTimeout(()=>{
+				let content = this.$refs.selectdrop
+				if(this.$parent.$options.name ==='SimpleSelect'||this.$parent.$options.name ==='SingleSelect'||this.$parent.$options.name ==='SimpleMultiSelect'){
+					content = content.querySelectorAll('.h-selectTable-dropdown-list')[0].children[0]
+				}else{
+					content = content.children[0]
+				}
+				// 横向或者纵向滚动条导致的像素偏移的问题
+				// 是否有纵向滚动条
+				let isScrollY = parseInt(this.$refs.selectdrop.clientWidth) > parseInt(content.clientWidth) ? true : false
+				// 是否有横向滚动条
+				let isScrollX = parseInt(this.$refs.selectdrop.clientHeight) > parseInt(content.clientHeight) ? true : false
+				this.width = parseInt(content.scrollWidth) + this.scrollBarWidth
+				// if (isScrollX) {
+				// 	this.width = isScrollY ? parseInt(content.scrollWidth) + this.scrollBarWidth : content.scrollWidth
 				// }
-			}else{
-				content = content.children[0]
-			}
-			// 横向或者纵向滚动条导致的像素偏移的问题
-			// 是否有纵向滚动条
-			let isScrollY = parseInt(this.$refs.selectdrop.clientWidth) > parseInt(content.clientWidth) ? true : false
-			// 是否有横向滚动条
-			let isScrollX = parseInt(this.$refs.selectdrop.clientHeight) > parseInt(content.clientHeight) ? true : false
-			if (isScrollX) {
-                this.width = isScrollY ? parseInt(content.scrollWidth) + this.scrollBarWidth : content.scrollWidth
-			}
+			},0)
 		},
 		update () {
             if (isServer) return;

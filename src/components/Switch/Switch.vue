@@ -88,10 +88,10 @@
       }
     },
     mounted() {
-      on(document, 'keyup', this.handleKeyup);
+      on(this.$refs.core, 'keyup', this.handleKeyup);
     },
     beforeDestroy() {
-      off(document, 'keyup', this.handleKeyup)
+      off(this.$refs.core, 'keyup', this.handleKeyup)
     },
     methods: {
       toggle () {

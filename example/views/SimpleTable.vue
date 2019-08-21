@@ -5,9 +5,11 @@
     <h2>带边线 多选</h2>
     <Button @click="loadData">加载数据</Button>
     <Button @click="changeData">切换数据</Button>
-    <!--<h-simple-table :columns="columnsBig" :data="bigData" border stripe @on-select="select" @on-select-cancel="select" :loading="loading" headAlgin="right" bodyAlgin="left" @on-drag="onDrag" height="300" @on-select-all='change' @on-scroll="change" @on-selection-change="change" width="1200" :canDrag="false">-->
-      <!--<span slot="loading">我是自定义加载！！！</span>-->
-    <!--</h-simple-table>-->
+    <Button @click="adddata">添加数据</Button>
+    <h-simple-table :columns="columnsBig1" :data="bigData" :addData="addData" border stripe :loading="loading" headAlgin="right" bodyAlgin="left" width="1200" :canDrag="false"
+                    @on-select="select" @on-select-cancel="select" @on-drag="onDrag" height="500" @on-select-all='change' @on-scroll="change" @on-selection-change="change">
+      <span slot="loading">我是自定义加载！！！</span>
+    </h-simple-table>
     <h-button @click="setLoading">切换状态</h-button>
     <h-button @click="clearData">清除数据</h-button>
     <h2>不带边线 单选 on-current-change</h2>
@@ -58,182 +60,127 @@
 </template>
 <script>
 import TexpandRow from './Texpand-row.vue'
-let jsonData=[];
-let tData =require('../assets/aa.json');
+let jsonData=[]
+let tData =require('../assets/aa.json')
 for (let i = 0; i < 1; i++) {
-  jsonData =tData.slice(0,100);
+  jsonData =tData.slice(0,20)
 }
+
 export default {
   components:{TexpandRow},
-  data () {
+  data() {
     return {
       showmsg:false,
       checked:false,
       msgbox:false,
       loading:false,
+      addData:[],
       bigData:[],
-      columzns18: [
-         {
-             type: "selection",
-             width: 60,
-             align: "center",
-             fixed: "left",
-         },
-         {
-             title: "名称",
-             key: "name",
-             align: "center",
-             width: 100,
-             fixed: "left",
-             hiddenCol:true,
-         },
-         {
-             title: "展示",
-             key: "show",
-             width: 200,
-             align: "center",
-             sortable: true,
-             filters: [
-               {
-                   label: '大于4000',
-                   value: 1
-               },
-               {
-                   label: '小于4000',
-                   value: 2
-               }
-             ],
-             filterMultiple: false,
-             filterMethod (value, row) {
-                 if (value === 1) {
-                     return row.show > 4000;
-                 } else if (value === 2) {
-                     return row.show < 4000;
-                 }
-             }
-         },
-         {
-             title: "唤醒",
-             key: "weak",
-             width: 150,
-             sortable: true,
-             fixed: "left",
-             sortable: true,
-             filters: [
-               {
-                   label: '大于4000',
-                   value: 1
-               },
-               {
-                   label: '小于4000',
-                   value: 2
-               }
-             ],
-             filterMultiple: false,
-             filterMethod (value, row) {
-                 if (value === 1) {
-                     return row.weak > 4000;
-                 } else if (value === 2) {
-                     return row.weak < 4000;
-                 }
-             }
-         },
-         {
-             title: "登录",
-             key: "signin",
-             width: 150,
-             sortable: true
-         },
-         {
-             title: "点击",
-             key: "click",
-             width: 150,
-             sortable: true
-         },
-         {
-             title: "激活",
-             key: "active",
-             width: 150,
-             sortable: true
-         },
-         {
-             title: "7日留存",
-             key: "day7",
-             width: 150,
-             sortable: true
-         },
-         {
-             title: "30日留存",
-             key: "day30",
-             width: 150,
-             sortable: true
-         },
-         {
-             title: "次日留存",
-             key: "tomorrow",
-             width: 150,
-             sortable: true
-         },
-         {
-             title: "日活跃",
-             key: "day",
-             width: 150,
-             sortable: true
-         },
-         {
-             title: "周活跃",
-             key: "week",
-             width: 150,
-             fixed: "right",
-             sortable: true,
-         },
-         {
-             title: "月活跃",
-             key: "month",
-             fixed: "right",
-             width: 150,
-             sortable: true,
-             filters: [
-               {
-                   label: '大于4000',
-                   value: 1
-               },
-               {
-                   label: '小于4000',
-                   value: 2
-               }
-             ],
-             filterMultiple: false,
-             filterMethod (value, row) {
-                 if (value === 1) {
-                     return row.month > 4000;
-                 } else if (value === 2) {
-                     return row.month < 4000;
-                 }
-             }
-         }
-      ],
-      columnsBig: [
-       {
-        title:'测试',
-        key:'ceshi',
-        algin:'center',
-
-       }
-      ],
       columnsBig1:[
-       {
-        title:'测试',
-        key:'ceshi',
-        algin:'center',
-       }
+        {
+          type: 'index',
+          align: 'center',
+          width:200,
+          fixed:'left',
+        },
+        {
+          type: 'selection',
+          align: 'center',
+          key:'select',
+          sortable: true
+        },
+        {
+          title: '姓名',
+          key: 'fundId',
+          width:200,
+          // remote: true,
+          // renderHeader:(h, params)=>{
+          //   return h('span','123')
+          // },
+          render:(h, params)=>{
+            return h('span',params.row.fundId+' 567')
+            // return params.row.fundId+' 123'
+          }
+          // hiddenCol:true,
+          // align: 'center',
+          // sortable:true,
+        },
+        {
+          title: '年龄',
+          key: 'tradeDate',
+          sortable:true,
+          // fixed:'left',
+        },
+        {
+          title: '地址',
+          ellipsis:true,
+          key: 'securityCode',
+        },
+        {
+          title: '地址1',
+          key: 'securityName',
+          minWidth:200,
+        },
+        {
+          title: '年龄',
+          key: 'tradeDate1',
+          minWidth:200,
+        },
+        {
+          title: '地址',
+          ellipsis:true,
+          minWidth:200,
+          key: 'securityCode1',
+        },
       ],
       columns1: [
-       {
-        title:'测试',
-        key:'ceshi',
-        algin:'center'
-       }
+        {
+          type: 'selection',
+          align: 'center',
+        },
+        {
+          type: 'index',
+          align: 'center',
+        },
+        {
+          title: '姓名',
+          key: 'name',
+          align: 'center',
+        },
+        {
+          title: '年龄',
+          key: 'age',
+        },
+        {
+          title: '地址',
+          ellipsis:true,
+          key: 'address',
+        },
+        {
+          title: '地址1',
+          key: 'address1',
+        },
+        {
+          title: '地址2',
+          key: 'address2',
+        },
+        {
+          title: '地址3',
+          key: 'address3',
+        },
+        {
+          title: '地址4',
+          key: 'address4',
+        },
+        {
+          title: '地址5',
+          key: 'address5',
+        },
+        {
+          title: '地址6',
+          key: 'address6',
+          sortType:'address',
+        }
       ],
       columns3: [
         {
@@ -304,7 +251,7 @@ export default {
                 }
               }),
               h('strong', params.row.name)
-            ]);
+            ])
           }
         },
         {
@@ -347,7 +294,7 @@ export default {
                   }
                 }
               }, '删除')
-            ]);
+            ])
           }
         }
       ],
@@ -489,7 +436,6 @@ export default {
       console.log('right'+e)
     },
     clearData() {
-//      this.columnsBig1.shift()
       this.columnsBig1.splice(2, 1)
       this.columnsBig1.pop()
       this.$nextTick(()=> {
@@ -509,15 +455,15 @@ export default {
         title: '年龄1',
         key: 'tradeDate'
       })
-//      this.columnsBig1.unshift({
-//        title: '地址1',
-//        key: 'securityName',
-//        minWidth:200,
-//      })
 
       this.$nextTick(()=>{
         this.bigData = jsonData;
       })
+    },
+    adddata() {
+      this.addData = [].concat(jsonData)
+//      this.addData = this.addData.push.apply(this.addData, jsonData)
+//      this.bigData = this.bigData.concat(jsonData)
     },
     changeData(){
       this.bigData =tData.slice(500,600);
@@ -632,174 +578,7 @@ export default {
     }
   },
   mounted(){
-    this.columns1=[
-        {
-          type: 'selection',
-          align: 'center',
-        },
-        {
-          type: 'index',
-          align: 'center',
-        },
-        {
-          title: '姓名',
-          key: 'name',
-          align: 'center',
-        },
-        {
-          title: '年龄',
-          key: 'age',
-        },
-        {
-          title: '地址',
-          ellipsis:true,
-          key: 'address',
-        },
-        {
-          title: '地址1',
-          key: 'address1',
-        },
-        {
-          title: '地址2',
-          key: 'address2',
-        },
-        {
-          title: '地址3',
-          key: 'address3',
-        },
-        {
-          title: '地址4',
-          key: 'address4',
-        },
-        {
-          title: '地址5',
-          key: 'address5',
-        },
-        {
-          title: '地址6',
-          key: 'address6',
-          sortType:'address',
-        }
-    ]
-    this.columnsBig=[
-        {
-          type: 'selection',
-          align: 'center',
-          sortable: true
-        },
-        {
-          type: 'index',
-          align: 'center',
-          key:'index'
-        },
-        {
-          title: '姓名',
-          key: 'fundId',
-          align: 'center',
-          ellipsis:true,
-        },
-        {
-          title: '年龄',
-          key: 'tradeDate',
-        },
-        {
-          title: '地址',
-          key: 'securityCode',
-        },
-        {
-          title: '地址1',
-          key: 'securityName',
-          ellipsis:true,
-        },
-        {
-          title: '地址2',
-          key: 'securityId',
-        },
-        {
-          title: '地址3',
-          key: 'tradeDir',
-        },
-        {
-          title: '地址4',
-          key: 'tradeSubtype',
-        },
-        {
-          title: '地址5',
-          key: 'marketNo',
-        },
-        {
-          title: '地址6',
-          key: 'tradeQuantity',
-        }
-    ]
-    this.columnsBig1=[
-        {
-          type: 'index',
-          align: 'center',
-          width:200,
-          key:"index",
-          fixed:'left',
-        },
-        {
-          type: 'selection',
-          align: 'center',
-          key:'select',
-          sortable: true
-        },
-        {
-          title: '姓名',
-          key: 'fundId',
-          width:200,
-          // remote: true,
-          // renderHeader:(h, params)=>{
-          //   return h('span','123')
-          // },
-          render:(h, params)=>{
-            return h('span',params.row.fundId+' 567')
-            // return params.row.fundId+' 123'
-          }
-          // hiddenCol:true,
-          // align: 'center',
-          // sortable:true,
-        },
-        {
-          title: '年龄',
-          key: 'tradeDate',
-          sortable:true,
-          // fixed:'left',
-        },
-         {
-           title: '地址',
-           ellipsis:true,
-           key: 'securityCode',
-         },
-         {
-           title: '地址1',
-           key: 'securityName',
-           minWidth:200,
-         },
-         {
-           title: '年龄',
-           key: 'tradeDate1',
-           minWidth:200,
-         },
-        {
-          title: '地址',
-          ellipsis:true,
-          minWidth:200,
-          key: 'securityCode1',
-        },
-//         {
-//           title: '地址1',
-//           key: 'securityName',
-//           minWidth:200,
-//           sortable:true,
-//         }
-    ]
-    // this.columnsBig1.push({
-    //   title: '地址6',
-    //   key: 'tradeQuantity',
-    // })
+    window.isO45 = true
   }
 }
 </script>

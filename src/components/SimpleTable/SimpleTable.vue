@@ -38,6 +38,7 @@
                   v-on:mousedown="mousedown($event,column,index)"
                   v-on:mouseout="mouseout($event,column,index)"
                   v-on:mousemove="mousemove($event,column,index)"
+                  v-on:mouseup="mouseup($event,column,index)"
                   :class="alignCls(column)"   style="position:relative">
                 <table-cell :column="column"
                             :index="index"
@@ -547,7 +548,9 @@ export default {
       hoverIndex:-1,
       scheduledAnimationFrame: false, // 是否进行动画帧更新visibledata,
       isHorizontal:false,
-      lastScrollTop: 0
+      lastScrollTop: 0,
+      beginLocation: {},
+      isCtrlDown: false
     }
   },
   computed: {
@@ -928,6 +931,8 @@ export default {
       })
     },
     mousedown(event, column, index,isLeft) {
+      this.beginLocation.clientX = event.clientX
+      this.beginLocation.clientY = event.clientY
       if (this.$isServer||(isLeft&&this.isRightFixed)) return
       if (!column) return
       if (!this.canDrag && !this.canMove) return
@@ -1101,24 +1106,6 @@ export default {
         document.addEventListener('mousemove', handleMouseMove)
         document.addEventListener('mouseup', handleMouseUp)
       }
-      if(column.sortable) {
-        const type = column._sortType
-        if(column.type === 'selection') {
-          if(type === 'normal') {
-            this.handleSort(index, 'asc')
-          }else {
-            this.handleSort(index, 'normal')
-          }
-        }else {
-          if (type === 'normal') {
-            this.handleSort(index, 'asc')
-          } else if (type === 'asc') {
-            this.handleSort(index, 'desc')
-          } else {
-            this.handleSort(index, 'normal')
-          }
-        }
-      }
     },
     mousemove(event, column, index,isLeft) {
       if (!this.canDrag || !column||(isLeft&&this.isRightFixed)) return
@@ -1164,6 +1151,41 @@ export default {
           this.movingColumn = null
         }
       }
+    },
+    mouseup(event, column, index) {
+      //拖拽表头排序不触发
+      if(this.isDrag(this.beginLocation.clientX, this.beginLocation.clientY, event.clientX, event.clientY)) {
+        return
+      }
+      if(column.sortable) {
+        const type = column._sortType
+        // 【TS:201907290145-资管业委会（资管）_孔磊-【需求类型】需求【需求描述】表格2、点击列头时就可以进行排序】 按ctrl+鼠标点击可重置排序
+        if(window.isO45 && this.isCtrlDown) {
+          this.handleSort(index, 'normal')
+          return
+        }
+        if(column.type === 'selection') {
+          if(type === 'normal') {
+            this.handleSort(index, 'asc')
+          }else {
+            this.handleSort(index, 'normal')
+          }
+        }else {
+          if (type === 'normal') {
+            this.handleSort(index, 'asc')
+          } else if (type === 'asc') {
+            this.handleSort(index, 'desc')
+          } else {
+            this.handleSort(index, 'normal')
+          }
+        }
+      }
+    },
+    isDrag(x1, y1, x2, y2) {
+      if(Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)) <= 1) {
+        return false;
+      }
+      return true;
     },
     mouseout() {
       if (this.$isServer) return
@@ -1374,8 +1396,8 @@ export default {
           : false
       let oldIndex = -1
       if(this.objData[_index]._isChecked&&this.rowSelectOnly){
-          return;
-        }
+        return;
+      }
       for (let i in this.objData) {
         this.objData[i]._isChecked = false //单选时取消多选项，估值6.0专用
         if (
@@ -1642,7 +1664,6 @@ export default {
         this.cloneColumns[index]._sortType = type
         return
       }
-      this.sortIndex = index
       let _index = this.cloneColumns[index]._index
       //【TS:201907290144-资管业委会（资管）_孔磊-【需求类型】需求【需求描述】表格1、勾选框列可以排序，选中的在上面】
       const columnType = this.cloneColumns[index].type
@@ -1994,6 +2015,10 @@ export default {
         } else {
           newRow._isMatched = false
         }
+        //【TS:201908140071-资管业委会（资管）_钱佳华-【需求类型】缺陷【需求描述】需求背景：如果开启selectC】 如果全选 分页加载数据 也要全选数据
+        if(this.isSelectAll) {
+          newRow._isChecked = true
+        }
         // const newRowdata = deepCopy(row)
         newRow._index = oldLength + index
         newRow._rowKey = rowKey++
@@ -2159,6 +2184,12 @@ export default {
         // home
         if (keyCode == 36) {
         }
+        // ctrl
+        if (e.keyCode === 17) {
+          e.preventDefault()
+          e.stopPropagation()
+          this.isCtrlDown = true
+        }
       }
     },
     navigateOptions(direction) {
@@ -2233,19 +2264,16 @@ export default {
         if (e.keyCode === 40 || e.keyCode === 38) {
           e.preventDefault()
           e.stopPropagation()
-          let _index = this.rebuildData[this.focusIndex]._index
-          this.highlightCurrentRow(_index)
+          let _index = this.rebuildData && this.rebuildData[this.focusIndex] ? this.rebuildData[this.focusIndex]._index : null
+          if (_index !== null && Number(_index) >= 0) this.highlightCurrentRow(_index)
         }
         // ctrl
         if (e.keyCode === 17) {
           e.preventDefault()
           e.stopPropagation()
-          this.cancelSort()
+          this.isCtrlDown = false
         }
       }
-    },
-    cancelSort() {
-      this.handleSort(this.sortIndex, 'normal');
     },
     keySelectRange() {
       let max, min

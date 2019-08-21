@@ -129,7 +129,7 @@ export default{
               label: '王府井'
             }
           ]
-        }, 
+        },
         {
           value: 'jiangsu',
           label: '江苏',
@@ -174,7 +174,7 @@ export default{
               code: 310000
             }]
           }]
-        }, 
+        },
         {
           value: 'jiangsu',
           label: '江苏',

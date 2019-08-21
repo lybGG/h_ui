@@ -29,7 +29,7 @@
         @blur="handleBlur"
         @input="handleInputDown"
         @keydown.delete="handleInputDelete"
-        tabindex="-1"
+        :tabindex="tabIndex"
         ref="input">
       <!-- 单选时清空按钮 -->
       <Icon name="close" :class="[prefixCls + '-arrow']" v-show="showCloseIcon" @click.native.stop="clearSingleSelect"
@@ -59,7 +59,7 @@
                 @blur="handleBlur"
                 @input="handleInputDown"
                 @keydown.delete="handleInputDelete"
-                tabindex="-1"
+                :tabindex="tabIndex"
                 ref="input">
           </div>
           <div class="h-selectTree-dropdown-list" ref="list" :style="listStyle">
@@ -489,9 +489,11 @@ export default{
         });
       }
     },
-    handleFocus(e){
+    handleFocus(){
+      this.$emit('on-focus')
     },
     handleBlur() {
+      this.$emit('on-blur')
     },
     handleInputDown() {
       var val = this.query;
